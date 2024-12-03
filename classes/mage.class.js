@@ -2,7 +2,7 @@ class Mage extends Entity {
     width = 50;
     height = 100;
     y = 350;
-    damage = 1;
+    damage = 5;
     health = 20;
 
     IMAGES_WALKING = [

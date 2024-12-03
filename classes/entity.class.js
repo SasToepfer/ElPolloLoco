@@ -32,8 +32,6 @@ class Entity extends Actor {
     }
 
     isAboveGround() {
-
-
         return this.y < 310;
     }
 
@@ -44,32 +42,41 @@ class Entity extends Actor {
     isColliding(ent) {
         let additionalwidth;
         if (ent instanceof Manarune) {
-            additionalwidth = ent.width /2;
+            additionalwidth = ent.width / 2;
         } else {
             additionalwidth = 0;
         }
         return (this.x + this.width / 2.5) + this.width / 4 > ent.x &&
-        (this.y+this.height /10) + this.height / 1.25 > ent.y &&
-        this.x < ent.x + additionalwidth &&
-        this.y < ent.y + ent.height;
+            (this.y + this.height / 10) + this.height / 1.25 > ent.y &&
+            this.x < ent.x + additionalwidth &&
+            this.y < ent.y + ent.height;
     }
 
     getHit(damage) {
         if (this.health - damage > 0) {
-            this.health -= damage;
-            this.lastHit = new Date().getTime();
+            if (this instanceof Character) {
+                if (!this.isHurt()) {
+                    this.health -= damage;
+                    this.lastHit = new Date().getTime();
+                    this.takeDamage();
+                }
+            } else {
+                this.health -= damage;
+                this.lastHit = new Date().getTime();
+            }
         } else {
             this.health = 0;
         }
     }
 
     isDead() {
-        return this.health == 0;            
+        return this.health == 0;
     }
 
     isHurt() {
         let timepassed = new Date().getTime() - this.lastHit;
         timepassed = timepassed / 1000;
         return timepassed < 1;
+        
     }
 }

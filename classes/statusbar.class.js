@@ -34,7 +34,7 @@ class Statusbar extends Actor {
             case this.percentage > 60: return 2;
             case this.percentage > 40: return 3;
             case this.percentage > 20: return 4;
-            case this.percentage > 0: return 5;
+            case this.percentage >= 0: return 5;
         }
     }
 }

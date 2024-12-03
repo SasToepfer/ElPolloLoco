@@ -1,5 +1,5 @@
 #launch.json folder
 .vscode/
 #Image folder
-img/
-audio/
+img/*
+audio/*

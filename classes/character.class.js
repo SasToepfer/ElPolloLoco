@@ -4,7 +4,13 @@ class Character extends Entity {
     speed = 3;
     y = 10;
     mana = 100;
-    
+    fixedMovement = false;
+    isPlayingHurtAnimation = false;
+    isPlayingCastAnimation = false;
+    blockAnimation = false;
+    isInvincible = false;
+    hurtTimeout = null;
+
     IMAGES_IDLE = [
         'img/Char/Idle/1.png',
         'img/Char/Idle/2.png',
@@ -108,20 +114,94 @@ class Character extends Entity {
         "img/Char/Jump/CatniJump0019.png",
         "img/Char/Jump/CatniJump0020.png",
     ];
+    IMAGES_CASTFIREBALL = [
+        "img/Char/CastFireball/CastFireball0000.png",
+        "img/Char/CastFireball/CastFireball0001.png",
+        "img/Char/CastFireball/CastFireball0002.png",
+        "img/Char/CastFireball/CastFireball0003.png",
+        "img/Char/CastFireball/CastFireball0004.png",
+        "img/Char/CastFireball/CastFireball0005.png",
+        "img/Char/CastFireball/CastFireball0006.png",
+        "img/Char/CastFireball/CastFireball0007.png",
+        "img/Char/CastFireball/CastFireball0008.png",
+        "img/Char/CastFireball/CastFireball0009.png",
+        "img/Char/CastFireball/CastFireball0010.png",
+        "img/Char/CastFireball/CastFireball0011.png",
+        "img/Char/CastFireball/CastFireball0012.png",
+        "img/Char/CastFireball/CastFireball0013.png",
+        "img/Char/CastFireball/CastFireball0014.png",
+        "img/Char/CastFireball/CastFireball0015.png",
+        "img/Char/CastFireball/CastFireball0016.png",
+        "img/Char/CastFireball/CastFireball0017.png"
+    ];
+    IMAGES_GETMANA = [
+        "img/Char/GetMana/GetMana0000.png",
+        "img/Char/GetMana/GetMana0001.png",
+        "img/Char/GetMana/GetMana0002.png",
+        "img/Char/GetMana/GetMana0003.png",
+        "img/Char/GetMana/GetMana0004.png",
+        "img/Char/GetMana/GetMana0005.png",
+        "img/Char/GetMana/GetMana0006.png",
+        "img/Char/GetMana/GetMana0007.png",
+        "img/Char/GetMana/GetMana0008.png",
+        "img/Char/GetMana/GetMana0009.png",
+        "img/Char/GetMana/GetMana0010.png",
+        "img/Char/GetMana/GetMana0011.png",
+        "img/Char/GetMana/GetMana0012.png",
+        "img/Char/GetMana/GetMana0013.png",
+        "img/Char/GetMana/GetMana0014.png",
+        "img/Char/GetMana/GetMana0015.png",
+        "img/Char/GetMana/GetMana0016.png",
+        "img/Char/GetMana/GetMana0017.png",
+        "img/Char/GetMana/GetMana0018.png",
+        "img/Char/GetMana/GetMana0019.png",
+        "img/Char/GetMana/GetMana0020.png"
+    ];
     IMAGES_DEAD = [
-        "img/2_character_pepe/5_dead/D-51.png",
-        "img/2_character_pepe/5_dead/D-52.png",
-        "img/2_character_pepe/5_dead/D-53.png",
-        "img/2_character_pepe/5_dead/D-54.png",
-        "img/2_character_pepe/5_dead/D-55.png",
-        "img/2_character_pepe/5_dead/D-56.png",
-        "img/2_character_pepe/5_dead/D-57.png"
+        "img/Char/Dead/isDead0000.png",
+        "img/Char/Dead/isDead0001.png",
+        "img/Char/Dead/isDead0002.png",
+        "img/Char/Dead/isDead0003.png",
+        "img/Char/Dead/isDead0004.png",
+        "img/Char/Dead/isDead0005.png",
+        "img/Char/Dead/isDead0006.png",
+        "img/Char/Dead/isDead0007.png",
+        "img/Char/Dead/isDead0008.png",
+        "img/Char/Dead/isDead0009.png",
+        "img/Char/Dead/isDead0010.png",
+        "img/Char/Dead/isDead0011.png",
+        "img/Char/Dead/isDead0012.png",
+        "img/Char/Dead/isDead0013.png",
+        "img/Char/Dead/isDead0014.png",
+        "img/Char/Dead/isDead0015.png",
+        "img/Char/Dead/isDead0016.png",
+        "img/Char/Dead/isDead0017.png",
+        "img/Char/Dead/isDead0018.png",
+        "img/Char/Dead/isDead0019.png"
     ];
     IMAGES_HURT = [
-        "img/2_character_pepe/4_hurt/H-41.png",
-        "img/2_character_pepe/4_hurt/H-42.png",
-        "img/2_character_pepe/4_hurt/H-43.png"
-    ]
+        "img/Char/Hurt/Hurt0000.png",
+        "img/Char/Hurt/Hurt0001.png",
+        "img/Char/Hurt/Hurt0002.png",
+        "img/Char/Hurt/Hurt0003.png",
+        "img/Char/Hurt/Hurt0004.png",
+        "img/Char/Hurt/Hurt0005.png",
+        "img/Char/Hurt/Hurt0006.png",
+        "img/Char/Hurt/Hurt0007.png",
+        "img/Char/Hurt/Hurt0008.png",
+        "img/Char/Hurt/Hurt0009.png",
+        "img/Char/Hurt/Hurt0010.png",
+        "img/Char/Hurt/Hurt0011.png",
+        "img/Char/Hurt/Hurt0012.png",
+        "img/Char/Hurt/Hurt0013.png",
+        "img/Char/Hurt/Hurt0014.png",
+        "img/Char/Hurt/Hurt0015.png",
+        "img/Char/Hurt/Hurt0016.png",
+        "img/Char/Hurt/Hurt0017.png",
+        "img/Char/Hurt/Hurt0018.png",
+        "img/Char/Hurt/Hurt0019.png",
+        "img/Char/Hurt/Hurt0020.png"
+    ];
 
     world;
     walking_sound = new Audio("audio/Player_Walk_Wood_3.wav");
@@ -134,6 +214,8 @@ class Character extends Entity {
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_CASTFIREBALL);
+        this.loadImages(this.IMAGES_GETMANA);
         this.applyGravity();
         this.animate();
     }
@@ -143,76 +225,167 @@ class Character extends Entity {
      */
     animate() {
         this.movement();
-        /** Sprite Animation */
+
         setInterval(() => {
             if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-            } else if (this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-            } else if (this.isAboveGround()) {
-                // Berechne den Sprungfortschritt
-                const totalJumpHeight = 310; // Maximale Y-Position des Bodens
-                const jumpHeight = totalJumpHeight - this.y;
-                const maxJumpHeight = 170; // Höhe des Sprungs
-                const jumpProgress = Math.min(1, Math.max(0, jumpHeight / maxJumpHeight)); // 0 bis 1
-    
-                // Sprunganimation
-                this.playJumpAnimation(this.IMAGES_JUMPING, jumpProgress);
+                this.playDeadAnimation();
+            } else if (this.isPlayingHurtAnimation) {
+                return;
+            } else if (this.isPlayingCastAnimation) {
+                return;
+            } else if (this.blockAnimation) {
+                return;
+            } else if (this.world.checkSpells() && this.world.keyboard.E && this.isMovingAllowed()) {
+                this.playCastAnimation();
+            } else if (this.isAboveGround() && this.isMovingAllowed()) {
+                this.playJumpAnimation();
+            } else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT) && this.isMovingAllowed()) {
+                this.playAnimation(this.IMAGES_WALKING);
             } else {
-                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                    this.playAnimation(this.IMAGES_WALKING);
-                }
-                if (!this.world.keyboard.RIGHT && !this.world.keyboard.LEFT) {
-                    this.playAnimation(this.IMAGES_IDLE);
-                }
+                this.playAnimation(this.IMAGES_IDLE);
             }
         }, 1000 / 30);
     }
 
-    playJumpAnimation(arr, jumpProgress) {
+
+
+    playDeadAnimation() {
+        this.blockAnimation = true;
+        this.fixedMovement = true;
+        let currentFrame = 0;
+        const animationFrames = this.IMAGES_DEAD;
+        const frameInterval = 1000 / 19;
+
+        const animationInterval = setInterval(() => {
+            this.img = this.imageCache[animationFrames[currentFrame]];
+            currentFrame++;
+            if (currentFrame >= animationFrames.length) {
+                clearInterval(animationInterval);
+                this.world.gameOver();
+            }
+        }, frameInterval);
+    }
+
+    takeDamage() {
+        if (!this.isInvincible) {
+            this.isInvincible = true; 
+            this.blockAnimation = true; 
+            this.playHurtAnimation();
+            this.hurtTimeout = setTimeout(() => {
+                this.isInvincible = false; 
+            }, 3000); 
+        }
+    }
+
+    playHurtAnimation() {
+
+        this.isPlayingHurtAnimation = true; 
+        let currentFrame = 0;
+        const animationFrames = this.IMAGES_HURT;
+        const frameInterval = 1000 / 40; 
+        const animationInterval = setInterval(() => {
+            this.img = this.imageCache[animationFrames[currentFrame]];
+            currentFrame++;
+            if (currentFrame >= animationFrames.length) {
+                clearInterval(animationInterval); 
+            }
+        }, frameInterval);
+        setTimeout(() => {
+            this.isPlayingHurtAnimation = false;
+        }, 600);
+    }
+
+    playJumpAnimation() {
         let frame;
+        let arr = this.IMAGES_JUMPING;
+        const jumpHeight = 310 - this.y;
+        const maxJumpHeight = 170;
+        const jumpProgress = Math.min(1, Math.max(0, jumpHeight / maxJumpHeight));
         if (jumpProgress < 0.2) {
-            // Absprungphase: Frames 0 bis 2
-            frame = Math.floor(jumpProgress * 15); // Schnelle Abfolge
+            frame = Math.floor(jumpProgress * 15); 
         } else if (jumpProgress < 0.8) {
-            // Flugphase: Frames 3 bis 16
             const flightFramesStart = 3;
-            const flightFramesEnd = 16;
-            const flightFramesCount = flightFramesEnd - flightFramesStart + 1;
-            const flightProgress = (jumpProgress - 0.2) / 0.6; // Skaliere auf Bereich 0–1
+            const flightFramesCount = 16 - flightFramesStart + 1;
+            const flightProgress = (jumpProgress - 0.2) / 0.6; 
             frame = flightFramesStart + Math.floor(flightProgress * flightFramesCount);
         } else {
-            // Landephase: Frames 17 bis Ende
             const landingFramesStart = 17;
-            const landingProgress = (jumpProgress - 0.8) / 0.2; // Skaliere auf Bereich 0–1
+            const landingProgress = (jumpProgress - 0.8) / 0.2; 
             frame = landingFramesStart + Math.floor(landingProgress * (arr.length - landingFramesStart));
         }
-    
-        frame = Math.min(frame, arr.length - 1); // Begrenze den Frame-Index
+        frame = Math.min(frame, arr.length - 1);
         this.img = this.imageCache[arr[frame]];
+    }
+
+    playCastAnimation() {
+        this.blockAnimation = true;
+        this.fixedMovement = true;
+        let currentFrame = 0;
+        const animationFrames = this.IMAGES_CASTFIREBALL;
+        const frameInterval = 1000 / animationFrames.length; 
+        const animationInterval = setInterval(() => {
+            this.img = this.imageCache[animationFrames[currentFrame]]; 
+            if (currentFrame == 12) {
+                this.world.castFireball();
+            }
+            currentFrame++; 
+            if (currentFrame >= animationFrames.length) {
+                clearInterval(animationInterval); 
+                this.fixedMovement = false; 
+                this.blockAnimation = false;
+            }
+        }, frameInterval);
+    }
+
+    playAnimationWithEndExecute(arr, executeFunction) {
+        this.blockAnimation = true;
+        this.fixedMovement = true;
+        let currentFrame = 0;
+        const animationFrames = arr;
+        const frameInterval = 1000 / animationFrames.length * 2;
+        const animationInterval = setInterval(() => {
+            this.img = this.imageCache[animationFrames[currentFrame]];
+            currentFrame++;
+            if (currentFrame >= animationFrames.length) {
+                clearInterval(animationInterval);
+                this.blockAnimation = false;
+                executeFunction;
+            }
+        }, frameInterval);
+    }
+
+    fillMana() {
+        console.log('mana up');
+        
+    }
+
+    isMovingAllowed() {
+        return this.fixedMovement ? false : true;
     }
 
     /** Movement */
     movement() {
         setInterval(() => {
-            this.walking_sound.pause();
-            /** Move Right */
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.moveRight();
-                this.otherDirection = false;
-                this.walking_sound.play();
+            if (this.isMovingAllowed()) {
+                this.walking_sound.pause();
+                /** Move Right */
+                if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+                    this.moveRight();
+                    this.otherDirection = false;
+                    this.walking_sound.play();
+                }
+                /** Move Left */
+                if (this.world.keyboard.LEFT && this.x >= 0) {
+                    this.moveLeft();
+                    this.otherDirection = true;
+                    this.walking_sound.play();
+                }
+                /** Jump */
+                if ((this.world.keyboard.SPACE || this.world.keyboard.UP) && !this.isAboveGround()) {
+                    this.jump();
+                }
+                this.world.camera_x = -this.x + 100;
             }
-            /** Move Left */
-            if (this.world.keyboard.LEFT && this.x >= 0) {
-                this.moveLeft();
-                this.otherDirection = true;
-                this.walking_sound.play();
-            }
-            /** Jump */
-            if ((this.world.keyboard.SPACE || this.world.keyboard.UP) && !this.isAboveGround()) {
-                this.jump();
-            }
-            this.world.camera_x = -this.x + 100;
 
         }, 1000 / 40)
     }

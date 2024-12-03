@@ -4,7 +4,9 @@ class Manarune extends Entity {
     width = 120;
     height = 50;
     
+    
     constructor() {
         super().loadImage("img/effects/rune.png");
+        
     }
 }
