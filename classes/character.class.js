@@ -4,10 +4,10 @@ class Character extends Entity {
     speed = 3;
     y = 60;
     mana = 100;
-    fixedMovement = false;
-    blockAnimation = false;
+    
     isInvincible = false;
     hurtTimeout = null;
+    collisionBox = { xOffset: 60, yOffset: 10, width: 30, height: 170 }
 
     IMAGES_IDLE = [];
     IMAGES_WALKING = [];
@@ -17,12 +17,12 @@ class Character extends Entity {
     IMAGES_DEAD = [];
     IMAGES_HURT = [];
 
-    world;
+    
     walking_sound = new Audio("audio/Player_Walk_Wood_3.wav");
 
 
     constructor() {
-        super().loadImage("img/Char/Idle/42.png");
+        super().loadImage("img/Char/Idle/0042.png");
         this.createImageArray(this.IMAGES_IDLE, "img/Char/Idle/" ,46);
         this.loadImages(this.IMAGES_IDLE);
         this.createImageArray(this.IMAGES_JUMPING, "img/Char/Jump/CatniJump" ,21);
@@ -100,27 +100,7 @@ class Character extends Entity {
         this.img = this.imageCache[arr[frame]];
     }
 
-    playAnimationWithArgs(arr, animationSpeed, isMovementBlocked, endFunction, frameCallback = null, frameCallbackFrame = -1, ...args) {
-        if (this.blockAnimation) {return}
-        this.blockAnimation = true;
-        this.fixedMovement = isMovementBlocked;
-        let currentFrame = 0;
-        const animationFrames = arr;
-        const frameInterval = 1000 / animationSpeed;
-        const animationInterval = setInterval(() => {
-            this.img = this.imageCache[animationFrames[currentFrame]];
-            if (frameCallback && currentFrame == frameCallbackFrame){
-                frameCallback();
-            }
-            currentFrame++;
-            if (currentFrame >= animationFrames.length) {
-                clearInterval(animationInterval);
-                if(typeof endFunction === 'function') {
-                    endFunction(...args);
-                }
-            }
-        }, frameInterval);
-    }
+    
 
     fillMana() {
         this.world.fillCharMana();

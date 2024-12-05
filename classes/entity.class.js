@@ -5,6 +5,9 @@ class Entity extends Actor {
     acceleration = 2;
     health = 100;
     lastHit = 0;
+    fixedMovement = false;
+    blockAnimation = false;
+    world;
 
     createImageArray(arr, path, length) {
         for (let index = 0; index < length; index++) {
@@ -50,24 +53,47 @@ class Entity extends Actor {
         this.speedY = 22;
     }
 
-    isColliding(ent) {
-        let additionalwidth;
-        if (ent instanceof Manarune) {
-            additionalwidth = ent.width / 2;
-        } else {
-            additionalwidth = 0;
-        }
-        return (this.x + this.width / 2.5) + this.width / 4 > ent.x &&
-            (this.y + this.height / 10) + this.height / 1.25 > ent.y &&
-            this.x < ent.x + additionalwidth &&
-            this.y < ent.y + ent.height;
+    playAnimationWithArgs(arr, animationSpeed, isMovementBlocked, endFunction, frameCallback = null, frameCallbackFrame = -1, ...args) {
+        if (this.blockAnimation) {return}
+        this.blockAnimation = true;
+        this.fixedMovement = isMovementBlocked;
+        let currentFrame = 0;
+        const animationFrames = arr;
+        const frameInterval = 1000 / animationSpeed;
+        const animationInterval = setInterval(() => {
+            this.img = this.imageCache[animationFrames[currentFrame]];
+            if (frameCallback && currentFrame == frameCallbackFrame){
+                frameCallback();
+            }
+            currentFrame++;
+            if (currentFrame >= animationFrames.length) {
+                clearInterval(animationInterval);
+                if(typeof endFunction === 'function') {
+                    endFunction(...args);
+                }
+            }
+        }, frameInterval);
     }
+
+    isColliding(ent) {
+        let thisBox = this.getCollisionBox();
+        let entBox = ent.getCollisionBox();
+
+        return (
+            thisBox.x < entBox.x + entBox.width &&
+            thisBox.x + thisBox.width > entBox.x &&
+            thisBox.y < entBox.y + entBox.height &&
+            thisBox.y + thisBox.height > entBox.y
+        );
+    }
+
+    
 
     getHit(damage) {
         if (this instanceof Character) {
             this.takeDamage(damage);
         } else {
-            if (this.health - damage > 0){
+            if (this.health - damage > 0) {
                 this.health -= damage;
             } else {
                 this.health = 0;

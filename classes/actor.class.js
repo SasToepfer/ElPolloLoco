@@ -16,30 +16,31 @@ class Actor {
 
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        // this.drawRect(ctx);
+    }
+
+    getCollisionBox() {
+        return {
+            x: this.x + (this.collisionBox?.xOffset || 0),
+            y: this.y + (this.collisionBox?.yOffset || 0),
+            width: this.collisionBox?.width || this.width,
+            height: this.collisionBox?.height || this.height
+        }
     }
 
     drawRect(ctx) {
-        if (this instanceof Mage || this instanceof Endboss) {
-            ctx.beginPath();
-            ctx.lineWidth = "2";
-            ctx.strokeStyle = "blue";
-            ctx.rect(this.x, this.y, this.width, this.height);
-            ctx.stroke();
-        }
-        if (this instanceof Character) {
-            ctx.beginPath();
-            ctx.lineWidth = "2";
-            ctx.strokeStyle = "blue";
-            ctx.rect(this.x + this.width / 2.5, this.y +this.height /10, this.width /4, this.height/1.25);
-            ctx.stroke();
-        }
-        if (this instanceof Manarune) {
-            ctx.beginPath();
-            ctx.lineWidth = "2";
-            ctx.strokeStyle = "red";
-            ctx.rect(this.x, this.y, this.width, this.height);
-            ctx.stroke();
-        }
+        let box = this.getCollisionBox();
+        let color = "blue";
+
+        if (this instanceof Mage) color = "blue";
+        if (this instanceof Character) color = "green";
+        if (this instanceof Manarune) color = "red";
+
+        ctx.beginPath();
+        ctx.lineWidth = "2";
+        ctx.strokeStyle = color;
+        ctx.rect(box.x, box.y, box.width, box.height);
+        ctx.stroke();
     }
 
     loadImages(arr) {

@@ -7,7 +7,7 @@ class World {
     backgroundLayers = [
         { img: 'img/background/Ground_00011_.png', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480}, // Weite Objekte
         // { img: 'img/layer2.png', speed: 0.5 }, // Gebäude
-        { img: 'img/background/sdpixel_floor_00002_.png', speed: 1.0 , yPosition: 390, width: 4096 / 4, height: 200}, // Bodennahe Details
+        { img: 'img/background/sdpixel_floor_00002_.png', speed: 1.0 , yPosition: 390, width: 4096 / 1, height: 200}, // Bodennahe Details
     ];
     backgroundImages = [];
     camera_x = 0;
@@ -15,6 +15,7 @@ class World {
     flame = new Manaflame(this.character);
     lastFireballTime = 0;
     spells = [];
+    enemySpells = [];
 
 
     constructor(canvas, keyboard) {
@@ -38,6 +39,7 @@ class World {
 
     setWorld() {
         this.character.world = this;
+        this.level.enemies.push(new Mage(this))
     }
 
     /** Game Checks */
@@ -45,7 +47,7 @@ class World {
         setInterval(() => {
             this.checkSpells();
             this.checkCollisions();
-
+            
         }, 50);
     }
     /** Character Cast Spells */
@@ -70,6 +72,16 @@ class World {
             fireball = new Spell(this.character.x + this.character.width / 1.5, this.character.y + this.character.height / 4, this.character.otherDirection);
         }
         this.spells.push(fireball);
+    }
+
+    castEnemyFireball(ent) {
+        let fireball = "";
+        if (ent.otherDirection) {
+            fireball = new Spell(ent.x, ent.y, false);
+        } else {
+            fireball = new Spell(ent.x, ent.y + ent.height / 4, true);
+        }
+        this.enemySpells.push(fireball);
     }
 
 
@@ -138,6 +150,7 @@ class World {
         this.addObjectsToMap(this.level.runes);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.spells);
+        this.addObjectsToMap(this.enemySpells);
         this.addToMap(this.character);
         this.addToMap(this.flame);
 
