@@ -5,9 +5,9 @@ class World {
     keyboard;
     ctx;
     backgroundLayers = [
-        { img: 'img/background/bg-cropped.png', speed: 0.2 }, // Weite Objekte
+        { img: 'img/background/Ground_00011_.png', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480}, // Weite Objekte
         // { img: 'img/layer2.png', speed: 0.5 }, // Gebäude
-        //{ img: 'img/layer3.png', speed: 1.0 }, // Bodennahe Details
+        { img: 'img/background/sdpixel_floor_00002_.png', speed: 1.0 , yPosition: 390, width: 4096 / 4, height: 200}, // Bodennahe Details
     ];
     backgroundImages = [];
     camera_x = 0;
@@ -25,6 +25,7 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
+        
     }
 
     loadBackground() {
@@ -83,7 +84,7 @@ class World {
         this.level.runes.forEach((rune, i) => {
             if (this.character.isColliding(rune) && (this.keyboard.D || this.keyboard.DOWN)) {
                 this.flame.percentage = 0;
-                this.character.playAnimationWithEndExecute(this.character.IMAGES_GETMANA, this.character.fillMana());
+                this.character.playAnimationWithArgs(this.character.IMAGES_GETMANA, 20, true, () => {this.character.fixedMovement = false, this.character.blockAnimation = false, this.character.fillMana()});
                 this.level.runes.splice(i, 1);
             }
         });
@@ -110,13 +111,15 @@ class World {
     }
 
     drawBackground() {
-        this.backgroundImages.forEach(layer => {
+        this.backgroundImages.forEach((layer, index) => {
             const offsetX = +this.camera_x * layer.speed; // Parallax-Bewegung
-            this.ctx.drawImage(layer.img, offsetX, 0, 2803, this.canvas.height);
+            const layerConfig = this.backgroundLayers[index];
+
+            this.ctx.drawImage(layer.img, offsetX, layerConfig.yPosition, layerConfig.width, layerConfig.height);
 
             // Wiederholung für nahtlosen Scroll
             if (offsetX < 0) {
-                this.ctx.drawImage(layer.img, offsetX + 2803, 0, 2803, this.canvas.height);
+                this.ctx.drawImage(layer.img, offsetX + layerConfig.width, layerConfig.yPosition, layerConfig.width, layerConfig.height);
             }
         });
     }
@@ -175,6 +178,6 @@ class World {
 
     gameOver() {
         console.log("game over");
-        
+        this.flame.percentage = 0;
     }
 }

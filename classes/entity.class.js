@@ -6,6 +6,17 @@ class Entity extends Actor {
     health = 100;
     lastHit = 0;
 
+    createImageArray(arr, path, length) {
+        for (let index = 0; index < length; index++) {
+            switch (true) {
+                case index < 10: arr.push(path + "000" + index + ".png"); break;
+                case index < 100: arr.push(path + "00" + index + ".png"); break;
+                case index < 1000: arr.push(path + "0" + index + ".png"); break;
+                default: break;
+            }
+        }
+    }
+
     playAnimation(arr) {
         let i = this.currentImage % arr.length;
         let path = arr[i];
@@ -32,7 +43,7 @@ class Entity extends Actor {
     }
 
     isAboveGround() {
-        return this.y < 310;
+        return this.y < 260;
     }
 
     jump() {
@@ -53,19 +64,14 @@ class Entity extends Actor {
     }
 
     getHit(damage) {
-        if (this.health - damage > 0) {
-            if (this instanceof Character) {
-                if (!this.isHurt()) {
-                    this.health -= damage;
-                    this.lastHit = new Date().getTime();
-                    this.takeDamage();
-                }
-            } else {
-                this.health -= damage;
-                this.lastHit = new Date().getTime();
-            }
+        if (this instanceof Character) {
+            this.takeDamage(damage);
         } else {
-            this.health = 0;
+            if (this.health - damage > 0){
+                this.health -= damage;
+            } else {
+                this.health = 0;
+            }
         }
     }
 
@@ -73,10 +79,4 @@ class Entity extends Actor {
         return this.health == 0;
     }
 
-    isHurt() {
-        let timepassed = new Date().getTime() - this.lastHit;
-        timepassed = timepassed / 1000;
-        return timepassed < 1;
-        
-    }
 }

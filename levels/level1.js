@@ -1,8 +1,6 @@
 const level1 = new Level(
     [
         new Mage(),
-        new Mage(),
-        new Mage(),
         new Endboss()
     ],
     [
