@@ -5,18 +5,19 @@ class World {
     keyboard;
     ctx;
     backgroundLayers = [
-        { img: 'img/background/Ground_00011_.png', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480}, // Weite Objekte
+        { img: 'img/background/Ground_00011_.png', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480 }, // Weite Objekte
         // { img: 'img/layer2.png', speed: 0.5 }, // Gebäude
-        { img: 'img/background/sdpixel_floor_00002_.png', speed: 1.0 , yPosition: 390, width: 4096 / 1, height: 200}, // Bodennahe Details
+        { img: 'img/background/sdpixel_floor_00002_.png', speed: 1.0, yPosition: 390, width: 4096 / 1, height: 200 }, // Bodennahe Details
     ];
     backgroundImages = [];
     camera_x = 0;
-    statusBar = new Statusbar();
+    hpFrame = new Statusbar(true, 20, 0, 300, 60);
+    hpBar = new Statusbar(false, 80, 20, 180, 20);
     flame = new Manaflame(this.character);
     lastFireballTime = 0;
     spells = [];
     enemySpells = [];
-
+    isGameOver = false;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -26,7 +27,7 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
-        
+
     }
 
     loadBackground() {
@@ -39,7 +40,54 @@ class World {
 
     setWorld() {
         this.character.world = this;
-        this.level.enemies.push(new Mage(this))
+        this.spawnClouds();
+        this.spawnBlobEnemy();
+        this.spawnMageEnemy();
+        setInterval(() => {
+            this.removeOffscreen();
+        }, 2000);
+    }
+
+    spawnClouds() {
+        setTimeout(() => {
+            if (!this.isGameOver) {
+                this.level.clouds.push(new Cloud(this.character.x + this.canvas.width));
+                this.spawnClouds();
+            }
+
+        }, 5000 + Math.random() * 4000);
+    }
+
+    spawnBlobEnemy() {
+        setTimeout(() => {
+            if (!this.isGameOver) {
+                this.level.enemies.push(new Blob(this));
+                this.spawnBlobEnemy();
+            }
+
+        }, 5000 + Math.random() * 4000);
+    }
+    spawnMageEnemy() {
+        setTimeout(() => {
+            if (!this.isGameOver) {
+                this.level.enemies.push(new Mage(this));
+                this.spawnMageEnemy();
+            }
+
+        }, 15000 + Math.random() * 10000);
+    }
+
+    removeOffscreen() {
+        this.level.clouds.forEach((cloud, index) => {
+            if (this.character.x - 500 >= cloud.x) {
+                this.level.clouds.splice(index, 1);
+            }
+        });
+        this.level.enemies.forEach((enemy, index) => {
+            if (this.character.x - 500 >= enemy.x) {
+                this.level.enemies.splice(index, 1);
+            }
+        });
     }
 
     /** Game Checks */
@@ -47,7 +95,7 @@ class World {
         setInterval(() => {
             this.checkSpells();
             this.checkCollisions();
-            
+
         }, 50);
     }
     /** Character Cast Spells */
@@ -90,13 +138,19 @@ class World {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
                 this.character.getHit(enemy.damage)
-                this.statusBar.setPercentage(this.character.health)
+                this.hpBar.setPercentage(this.character.health)
+            }
+        });
+        this.enemySpells.forEach((spell) => {
+            if (this.character.isColliding(spell)) {
+                this.character.getHit(spell.damage)
+                this.hpBar.setPercentage(this.character.health)
             }
         });
         this.level.runes.forEach((rune, i) => {
             if (this.character.isColliding(rune) && (this.keyboard.D || this.keyboard.DOWN)) {
                 this.flame.percentage = 0;
-                this.character.playAnimationWithArgs(this.character.IMAGES_GETMANA, 20, true, () => {this.character.fixedMovement = false, this.character.blockAnimation = false, this.character.fillMana()});
+                this.character.playAnimationWithArgs(this.character.IMAGES_GETMANA, 20, true, () => { this.character.fixedMovement = false, this.character.blockAnimation = false, this.character.fillMana() });
                 this.level.runes.splice(i, 1);
             }
         });
@@ -158,7 +212,8 @@ class World {
         this.ctx.translate(-this.camera_x, 0);
 
         /** Moving fixed to camera */
-        this.addToMap(this.statusBar);
+        this.addToMap(this.hpBar);
+        this.addToMap(this.hpFrame);
 
         let self = this;
         requestAnimationFrame(() => self.draw())
@@ -190,7 +245,7 @@ class World {
     }
 
     gameOver() {
-        console.log("game over");
+        this.isGameOver = true;
         this.flame.percentage = 0;
     }
 }

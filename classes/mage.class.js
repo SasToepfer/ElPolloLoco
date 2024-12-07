@@ -20,7 +20,7 @@ class Mage extends Entity {
         this.loadImages(this.IMAGES_WALKING);
         this.createImageArray(this.IMAGES_CAST, "img/Enemy/Mage/Mage_Attack/Mage_Attack", 80);
         this.loadImages(this.IMAGES_CAST);
-        this.x = world.canvas.width + 100;
+        this.x = world.character.x + 700;
         this.speed = 0.4;
         this.world = world;
 

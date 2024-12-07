@@ -17,7 +17,7 @@ class Endboss extends Entity {
     constructor(){
         super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
-        this.x = 700 * 4;
+        this.x = 7500;
         this.animate();
     }
 
