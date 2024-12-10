@@ -34,6 +34,7 @@ function init() {
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     renderStartscreen();
+
     if (gameState == "push") {
         renderPushAnimation();
     } else if (mouseInsideCanvas) {
@@ -41,9 +42,11 @@ function render() {
     } else {
         renderIdleAnimation();
     }
-    if(gameState !== "game") requestAnimationFrame(render);
-    renderStartButton();
-    renderFullscreenButton();
+
+    renderStartButton(); // Zeichne den Start-Button
+    renderFullscreenButton(); // Zeichne den Fullscreen-Button
+
+    if (gameState !== "game") requestAnimationFrame(render);
 }
 
 function renderFullscreenButton() {

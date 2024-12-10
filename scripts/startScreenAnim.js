@@ -53,14 +53,58 @@ function renderPushAnimation() {
 
 // Start-Animation rendern (abhängig von Mausposition)
 function renderStartAnimation() {
-    let distance = Math.sqrt(
-        (mouseX - buttonCenter.x) ** 2 + (mouseY - buttonCenter.y) ** 2
-    );
+    // Mitte des Bildschirms berechnen
+    let centerX = canvas.width / 2;
+    let centerY = canvas.height / 2;
+
+    // Entfernung der Maus zur Mitte des Bildschirms berechnen
+    let distance = Math.sqrt((mouseX - centerX) ** 2 + (mouseY - centerY) ** 2);
+
+    // Maximale Entfernung für die Animation
+    let maxDistance = Math.sqrt((canvas.width / 2) ** 2 + (canvas.height / 2) ** 2);
+
+    // Fortschritt der Animation (zwischen 0 und 1)
     let progress = Math.max(0, Math.min(1, 1 - distance / maxDistance));
-    currentStartFrame = Math.floor(progress * (startFrames.length - 1));
-    let startImage = startFrames[currentStartFrame];
-    if (startImage.complete) { 
-        ctx.drawImage(startImage, 0, 0, canvas.width, canvas.height); 
+
+    // Bestimme das aktuelle Frame der Animation
+    let currentFrame = Math.floor(progress * (startFrames.length - 1));
+
+    // Aktuelles Frame rendern
+    let startImage = startFrames[currentFrame];
+    if (startImage && startImage.complete) {
+        ctx.drawImage(startImage, 0, 0, canvas.width, canvas.height);
+    }
+}
+
+function renderFullscreenAnimation() {
+    // Berechne die Mitte des Fullscreen-Buttons
+    let buttonCenterX = fullscreenButton.x + fullscreenButton.width / 2;
+    let buttonCenterY = fullscreenButton.y + fullscreenButton.height / 2;
+
+    // Entfernung der Maus zur Mitte des Fullscreen-Buttons berechnen
+    let distance = Math.sqrt(
+        (mouseX - buttonCenterX) ** 2 + (mouseY - buttonCenterY) ** 2
+    );
+
+    // Maximale Entfernung, die eine Animation triggert
+    let maxFullscreenDistance = Math.max(fullscreenButton.width, fullscreenButton.height) * 3;
+
+    // Fortschritt der Animation (zwischen 0 und 1, basierend auf Entfernung)
+    let progress = Math.max(0, Math.min(1, 1 - distance / maxFullscreenDistance));
+
+    // Bestimme das aktuelle Frame der Animation
+    let currentFrame = Math.floor(progress * (startFrames.length - 1));
+
+    // Render das aktuelle Frame der Animation
+    let fullscreenImage = startFrames[currentFrame];
+    if (fullscreenImage && fullscreenImage.complete) {
+        ctx.drawImage(
+            fullscreenImage,
+            fullscreenButton.x, // Gleiche Position wie der Fullscreen-Button
+            fullscreenButton.y,
+            fullscreenButton.width,
+            fullscreenButton.height
+        );
     }
 }
 

@@ -1,4 +1,9 @@
 class Actor {
+    BASE_WIDTH = 720; // Ursprüngliche Breite
+    BASE_HEIGHT = 480; // Ursprüngliche Höhe
+
+    scaleX = canvas.width / BASE_WIDTH;
+    scaleY = canvas.height / BASE_HEIGHT;
     x = 120;
     y = 350;
     height = 100;
@@ -54,8 +59,8 @@ class Actor {
             ctx.strokeStyle = color;
             ctx.rect(defBox.x, defBox.y, defBox.width, defBox.height);
             ctx.stroke();
-            
-        } 
+
+        }
         color = "yellow";
     }
 

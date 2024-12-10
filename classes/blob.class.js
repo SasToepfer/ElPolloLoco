@@ -17,7 +17,7 @@ class Blob extends Entity {
         this.loadImages(this.IMAGES_ATTACK);
         this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Blob/Blob_Walk/Poring_Walk", 51);
         this.loadImages(this.IMAGES_WALKING);
-        this.x = world.character.x + 700;
+        this.x = world.character.x + world.canvas.width;
         this.speed = 0.5;
         this.world = world;
         this.animate();
