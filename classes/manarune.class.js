@@ -7,6 +7,5 @@ class Manarune extends Entity {
     
     constructor() {
         super().loadImage("img/effects/rune.png");
-        
     }
 }

@@ -75,8 +75,9 @@ class Entity extends Actor {
         }, frameInterval);
     }
 
-    isColliding(ent) {
-        let thisBox = this.getCollisionBox();
+    isColliding(ent, isDeflect = false) {
+        let thisBox;
+        thisBox = isDeflect ? this.getRelectionBox() : this.getCollisionBox();
         let entBox = ent.getCollisionBox();
 
         return (
@@ -86,8 +87,6 @@ class Entity extends Actor {
             thisBox.y + thisBox.height > entBox.y
         );
     }
-
-    
 
     getHit(damage) {
         if (this instanceof Character) {

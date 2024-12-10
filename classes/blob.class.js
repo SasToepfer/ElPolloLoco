@@ -20,14 +20,12 @@ class Blob extends Entity {
         this.x = world.character.x + 700;
         this.speed = 0.5;
         this.world = world;
-
         this.animate();
         this.nextAction();
     }
 
     animate() {
         this.movement();
-
         setInterval(() => {
             if (this.blockAnimation) {
                 return
@@ -40,7 +38,6 @@ class Blob extends Entity {
     }
 
     nextAction() {
-       
         if (this.x - this.world.character.x <= 400) {
             this.speed = 0;
             this.animState = "attack"
@@ -57,7 +54,6 @@ class Blob extends Entity {
             }else {
                 this.moveLeft();
             }
-            
          }, 1000 / 100);
     }
 }

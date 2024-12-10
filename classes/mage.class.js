@@ -13,7 +13,7 @@ class Mage extends Entity {
     otherDirection = false;
 
     constructor(world) {
-        super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
+        super().loadImage("img/Enemy/Mage/Mage_Idle/Mage_Idle0000.png");
         this.createImageArray(this.IMAGES_IDLE, "img/Enemy/Mage/Mage_Idle/Mage_Idle", 120);
         this.loadImages(this.IMAGES_IDLE);
         this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Mage/Mage_Walk/Mage_Walk", 46);
@@ -23,15 +23,19 @@ class Mage extends Entity {
         this.x = world.character.x + 700;
         this.speed = 0.4;
         this.world = world;
-
         this.animate();
         this.nextAction();
     }
 
     animate() {
+        
         this.movement();
-
         setInterval(() => {
+            if (this.isDead()) 
+                {
+                    clearInterval();
+                    return;
+                }
             if (this.blockAnimation) {
                 return
             } else if (this.animState == "cast") {
@@ -45,6 +49,8 @@ class Mage extends Entity {
     }
 
     nextAction() {
+        // let randomAction = 60;
+        if (this.isDead())  {return;}
         let randomAction = Math.random() * 100;
         if (randomAction <= 50) {
             this.animState = "walk"
@@ -67,7 +73,6 @@ class Mage extends Entity {
             }else {
                 this.moveLeft();
             }
-            
          }, 1000 / 100);
     }
 }

@@ -5,9 +5,9 @@ class World {
     keyboard;
     ctx;
     backgroundLayers = [
-        { img: 'img/background/Ground_00011_.png', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480 }, // Weite Objekte
+        { img: 'img/background/Ground_00011_.jpg', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480 }, // Weite Objekte
         // { img: 'img/layer2.png', speed: 0.5 }, // Gebäude
-        { img: 'img/background/sdpixel_floor_00002_.png', speed: 1.0, yPosition: 390, width: 4096 / 1, height: 200 }, // Bodennahe Details
+        { img: 'img/background/sdpixel_floor_00002_.jpg', speed: 1.0, yPosition: 390, width: 4096 / 1, height: 200 }, // Bodennahe Details
     ];
     backgroundImages = [];
     camera_x = 0;
@@ -15,6 +15,7 @@ class World {
     hpBar = new Statusbar(false, 80, 20, 180, 20);
     flame = new Manaflame(this.character);
     lastFireballTime = 0;
+    lastDeflectTime = 0;
     spells = [];
     enemySpells = [];
     isGameOver = false;
@@ -27,7 +28,7 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
-
+        this.level.enemies.push(new Mage(this));
     }
 
     loadBackground() {
@@ -54,7 +55,6 @@ class World {
                 this.level.clouds.push(new Cloud(this.character.x + this.canvas.width));
                 this.spawnClouds();
             }
-
         }, 5000 + Math.random() * 4000);
     }
 
@@ -64,7 +64,6 @@ class World {
                 this.level.enemies.push(new Blob(this));
                 this.spawnBlobEnemy();
             }
-
         }, 5000 + Math.random() * 4000);
     }
     spawnMageEnemy() {
@@ -73,7 +72,6 @@ class World {
                 this.level.enemies.push(new Mage(this));
                 this.spawnMageEnemy();
             }
-
         }, 15000 + Math.random() * 10000);
     }
 
@@ -95,19 +93,18 @@ class World {
         setInterval(() => {
             this.checkSpells();
             this.checkCollisions();
-
         }, 50);
     }
     /** Character Cast Spells */
-    checkSpells() {
+    checkSpells(spell) {
         const currentTime = new Date().getTime();
         const cooldown = 2000;
-
-        if ((currentTime - this.lastFireballTime >= cooldown) && this.flame.percentage > 0) {
-            return true;
-        } else {
-            return false;
+        switch (spell) {
+            case "fireball": return (currentTime - this.lastFireballTime >= cooldown) && this.flame.percentage > 0 ? true : false;
+            case "deflect": return currentTime - this.lastDeflectTime >= cooldown ? true : false;
+            default: break;
         }
+
     }
 
     castFireball() {
@@ -129,7 +126,16 @@ class World {
         } else {
             fireball = new Spell(ent.x, ent.y + ent.height / 4, true);
         }
-        this.enemySpells.push(fireball);
+        if (ent.health != 0) {
+            this.enemySpells.push(fireball);
+        }
+        
+    }
+
+    deflectFireball(ref) {
+        let fireball = "";
+        fireball = new Spell(ref.x, ref.y, false);
+        this.spells.push(fireball);
     }
 
 
@@ -164,6 +170,15 @@ class World {
                 }
             });
         }
+    }
+
+    checkDeflect() {
+        this.enemySpells.forEach((spell, i) => {
+            if (this.character.isColliding(spell, true)) {
+                this.deflectFireball(spell);
+                this.enemySpells.splice(i, 1);
+            }
+        });
     }
 
     fillCharMana() {
@@ -247,5 +262,11 @@ class World {
     gameOver() {
         this.isGameOver = true;
         this.flame.percentage = 0;
+        setTimeout(() => {
+            this.level.enemies = [];
+            this.character.x = 120;
+            gameState = "startscreen";
+            requestAnimationFrame(render);
+        }, 3000);
     }
 }

@@ -8,18 +8,18 @@ class Character extends Entity {
     isInvincible = false;
     hurtTimeout = null;
     collisionBox = { xOffset: 60, yOffset: 10, width: 30, height: 170 }
+    deflectBox = { xOffset: this.collisionBox.xOffset + this.collisionBox.width + 20, yOffset: 10, width: 20, height: 170 }
 
     IMAGES_IDLE = [];
     IMAGES_WALKING = [];
     IMAGES_JUMPING = [];
     IMAGES_CASTFIREBALL = [];
+    IMAGES_DEFLECT = [];
     IMAGES_GETMANA = [];
     IMAGES_DEAD = [];
     IMAGES_HURT = [];
-
     
     walking_sound = new Audio("audio/Player_Walk_Wood_3.wav");
-
 
     constructor() {
         super().loadImage("img/Char/Idle/0042.png");
@@ -35,6 +35,8 @@ class Character extends Entity {
         this.loadImages(this.IMAGES_HURT);
         this.createImageArray(this.IMAGES_CASTFIREBALL, "img/Char/CastFireball/CastFireball" ,18);
         this.loadImages(this.IMAGES_CASTFIREBALL);
+        this.createImageArray(this.IMAGES_DEFLECT, "img/Char/Deflect/deflect" ,31);
+        this.loadImages(this.IMAGES_DEFLECT);
         this.createImageArray(this.IMAGES_GETMANA, "img/Char/GetMana/GetMana" ,21);
         this.loadImages(this.IMAGES_GETMANA);
         this.applyGravity();
@@ -46,11 +48,13 @@ class Character extends Entity {
      */
     animate() {
         this.movement();
-
         setInterval(() => {
             if (this.blockAnimation) {
                 return
-            } else if (this.world.checkSpells() && this.world.keyboard.E) {
+            } else if (this.world.checkSpells("deflect") && this.world.keyboard.Q) {
+                console.log('hi');
+                 this.playAnimationWithArgs(this.IMAGES_DEFLECT, 30, true, () => {this.fixedMovement = false, this.blockAnimation = false}, () => this.world.checkDeflect(),8);
+            } else if (this.world.checkSpells("fireball") && this.world.keyboard.E) {
                 this.playAnimationWithArgs(this.IMAGES_CASTFIREBALL, 30, true, () => {this.fixedMovement = false, this.blockAnimation = false}, () => this.world.castFireball(),12);
             } else if (this.isAboveGround()) {
                 this.playJumpAnimation();

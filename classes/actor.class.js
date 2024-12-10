@@ -1,13 +1,11 @@
 class Actor {
-    img;
-    currentImage = 0;
-    imageCache = {};
-
     x = 120;
     y = 350;
     height = 100;
     width = 50;
-
+    img;
+    currentImage = 0;
+    imageCache = {};
 
     loadImage(path) {
         this.img = new Image();
@@ -28,19 +26,37 @@ class Actor {
         }
     }
 
+    getRelectionBox() {
+        return {
+            x: this.x + (this.deflectBox.xOffset || 0),
+            y: this.y + (this.deflectBox.yOffset || 0),
+            width: this.deflectBox.width || this.width,
+            height: this.deflectBox.height || this.height
+        }
+    }
+
     drawRect(ctx) {
         let box = this.getCollisionBox();
         let color = "blue";
-
         if (this instanceof Mage) color = "blue";
         if (this instanceof Character) color = "green";
         if (this instanceof Manarune) color = "red";
-
         ctx.beginPath();
         ctx.lineWidth = "2";
         ctx.strokeStyle = color;
         ctx.rect(box.x, box.y, box.width, box.height);
         ctx.stroke();
+        if (this instanceof Character) {
+            color = "yellow";
+            let defBox = this.getRelectionBox()
+            ctx.beginPath();
+            ctx.lineWidth = "2";
+            ctx.strokeStyle = color;
+            ctx.rect(defBox.x, defBox.y, defBox.width, defBox.height);
+            ctx.stroke();
+            
+        } 
+        color = "yellow";
     }
 
     loadImages(arr) {

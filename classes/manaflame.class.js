@@ -20,7 +20,6 @@ class Manaflame extends Entity {
         this.charRef = characterRef;
         this.updatePos();
         this.updateSize();
-
     }
 
     updatePos(){
@@ -28,12 +27,10 @@ class Manaflame extends Entity {
             if (this.charRef.otherDirection) {
                 this.x = this.charRef.x + this.charRef.width / 3 - this.width / 2;
                 this.y = this.charRef.y + this.maxHeight / 3 + this.height / -1.25;
-                
             } else {
                 this.x = this.charRef.x + this.charRef.width / 1.5 - this.width /2 ;
                 this.y = this.charRef.y + this.maxHeight / 3 + this.height / -1.25;
             }
-            
         }, 5);
     }
     

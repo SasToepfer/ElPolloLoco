@@ -9,7 +9,6 @@ class Cloud extends Entity {
         "img/clouds/cloud4.png",
         "img/clouds/cloud5.png"
     ]
-   
 
     constructor(x) {
         super().loadImage(this.getRandomImage());
@@ -19,17 +18,13 @@ class Cloud extends Entity {
         this.width = 150 + (Math.random() - 0.5) * 40;
         this.height = 100 + (Math.random() - 0.5) * 20;
         this.animate();
-
     }
 
     animate() {
         setInterval(() => this.moveLeft(), 1000 / 60);
-        
     }
 
     getRandomImage() {
-        console.log(this.IMAGES[Math.floor(Math.random() * 5)]);
-        
         return this.IMAGES[Math.floor(Math.random() *5)]
     }
 
