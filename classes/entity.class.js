@@ -9,8 +9,8 @@ class Entity extends Actor {
     blockAnimation = false;
     world;
 
-    createImageArray(arr, path, length) {
-        for (let index = 0; index < length; index++) {
+    createImageArray(arr, path, length, offset = 0) {
+        for (let index = offset; index < length; index++) {
             switch (true) {
                 case index < 10: arr.push(path + "000" + index + ".png"); break;
                 case index < 100: arr.push(path + "00" + index + ".png"); break;
@@ -28,33 +28,44 @@ class Entity extends Actor {
     }
 
     moveLeft() {
-        this.x -= this.speed;
+        this.x -= this.speed * scaleX;
     }
 
     moveRight() {
-        this.x += this.speed;
+        this.x += this.speed * scaleX;
     }
 
     applyGravity() {
         setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
-                this.speedY -= this.acceleration;
+                this.speedY -= this.acceleration * scaleY;
             }
 
         }, 1000 / 25);
     }
 
     isAboveGround() {
-        return this.y < 260;
+        return this.y < 260 * scaleY;
     }
 
     jump() {
-        this.speedY = 22;
+        this.speedY = 22 * scaleY;
     }
 
+    /**
+     * Play animation with function call at the end and function call at specific frame
+     * @param {Array} arr 
+     * @param {float} animationSpeed 
+     * @param {boolean} isMovementBlocked 
+     * @param {args} endFunction 
+     * @param {args} frameCallback 
+     * @param {integer} frameCallbackFrame 
+     * @param  {...any} args 
+     * @returns 
+     */
     playAnimationWithArgs(arr, animationSpeed, isMovementBlocked, endFunction, frameCallback = null, frameCallbackFrame = -1, ...args) {
-        if (this.blockAnimation) {return}
+        if (this.blockAnimation) { return }
         this.blockAnimation = true;
         this.fixedMovement = isMovementBlocked;
         let currentFrame = 0;
@@ -62,13 +73,13 @@ class Entity extends Actor {
         const frameInterval = 1000 / animationSpeed;
         const animationInterval = setInterval(() => {
             this.img = this.imageCache[animationFrames[currentFrame]];
-            if (frameCallback && currentFrame == frameCallbackFrame){
+            if (frameCallback && currentFrame == frameCallbackFrame) {
                 frameCallback();
             }
             currentFrame++;
             if (currentFrame >= animationFrames.length) {
                 clearInterval(animationInterval);
-                if(typeof endFunction === 'function') {
+                if (typeof endFunction === 'function') {
                     endFunction(...args);
                 }
             }
@@ -89,15 +100,7 @@ class Entity extends Actor {
     }
 
     getHit(damage) {
-        if (this instanceof Character) {
-            this.takeDamage(damage);
-        } else {
-            if (this.health - damage > 0) {
-                this.health -= damage;
-            } else {
-                this.health = 0;
-            }
-        }
+        this.takeDamage(damage);
     }
 
     isDead() {

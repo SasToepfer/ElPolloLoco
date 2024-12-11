@@ -1,14 +1,15 @@
 class Mage extends Entity {
-    width = 150;
-    height = 250;
-    y = 220;
+    baseWidth = 150;
+    baseHeight = 250;
+    baseY = 220;
     damage = 50;
     health = 20;
-    collisionBox = { xOffset: 60, yOffset: 50, width: 20, height: 180 }
+    baseCollisionBox = { xOffset: 60, yOffset: 50, width: 20, height: 180 }
     animState = "idle";
     IMAGES_IDLE = [];
     IMAGES_WALKING = [];
     IMAGES_CAST = [];
+    IMAGES_HURT = [];
     world;
     otherDirection = false;
 
@@ -18,17 +19,19 @@ class Mage extends Entity {
         this.loadImages(this.IMAGES_IDLE);
         this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Mage/Mage_Walk/Mage_Walk", 46);
         this.loadImages(this.IMAGES_WALKING);
+        this.createImageArray(this.IMAGES_HURT, "img/Enemy/Mage/Mage_Hurt/", 30, 10);
+        this.loadImages(this.IMAGES_HURT);
         this.createImageArray(this.IMAGES_CAST, "img/Enemy/Mage/Mage_Attack/Mage_Attack", 80);
         this.loadImages(this.IMAGES_CAST);
         this.x = world.character.x + world.canvas.width;
         this.speed = 0.4;
         this.world = world;
+        this.updateDimensions();
         this.animate();
         this.nextAction();
     }
 
     animate() {
-        
         this.movement();
         setInterval(() => {
             if (this.isDead()) 
@@ -46,6 +49,15 @@ class Mage extends Entity {
                 this.playAnimation(this.IMAGES_IDLE);
             }
         }, 1000 / 30);
+    }
+
+    takeDamage(damage) {
+        if (this.health - damage > 0) {
+            this.health -= damage;
+        } else {
+            this.health = 0;
+        }
+        this.playAnimationWithArgs(this.IMAGES_HURT, 100, true, () => this.world.checkEnemyDead());
     }
 
     nextAction() {
@@ -68,7 +80,7 @@ class Mage extends Entity {
 
     movement() {
         setInterval(() => {
-            if (this.animState != "walk") {
+            if (this.animState != "walk" || this.fixedMovement) {
                 return;
             }else {
                 this.moveLeft();

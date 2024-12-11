@@ -1,14 +1,14 @@
 class Character extends Entity {
-    width = 150;
-    height = 200;
+    baseWidth = 150;
+    baseHeight = 200;
     speed = 3;
-    y = 60;
+    baseY = 60;
     mana = 100;
     
     isInvincible = false;
     hurtTimeout = null;
-    collisionBox = { xOffset: 60, yOffset: 10, width: 30, height: 170 }
-    deflectBox = { xOffset: this.collisionBox.xOffset + this.collisionBox.width + 20, yOffset: 10, width: 20, height: 170 }
+    baseCollisionBox = { xOffset: 60, yOffset: 10, width: 30, height: 170 };
+    deflectBox = { xOffset: this.collisionBox.xOffset + this.collisionBox.width + 20, yOffset: 10, width: 20, height: 170 };
 
     IMAGES_IDLE = [];
     IMAGES_WALKING = [];
@@ -39,6 +39,7 @@ class Character extends Entity {
         this.loadImages(this.IMAGES_DEFLECT);
         this.createImageArray(this.IMAGES_GETMANA, "img/Char/GetMana/GetMana" ,21);
         this.loadImages(this.IMAGES_GETMANA);
+        this.updateFullscreen();
         this.applyGravity();
         this.animate();
     }
@@ -46,6 +47,16 @@ class Character extends Entity {
      * Movement Direction and Speed
      * Sprite Animations for Movement
      */
+    updateFullscreen(){
+        this.updateDimensions();
+        this.deflectBox = { 
+            xOffset: (this.collisionBox.xOffset + this.collisionBox.width + (20 * scaleX)), 
+            yOffset: 10 *scaleY, 
+            width: 20 * scaleX, 
+            height: 170 * scaleY
+        }
+    }
+
     animate() {
         this.movement();
         setInterval(() => {

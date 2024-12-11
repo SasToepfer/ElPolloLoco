@@ -3,8 +3,8 @@ class Manaflame extends Entity {
     percentage = 100;
     maxWidth = 30;
     maxHeight = 50;
-    width = 30;
-    height = 50;
+    baseWidth = 30;
+    baseHeight = 50;
     IMAGES = [
         "img/effects/flamme-0.png",
         "img/effects/flamme-1.png",
@@ -22,22 +22,22 @@ class Manaflame extends Entity {
         this.updateSize();
     }
 
+
     updatePos(){
         setInterval(() => {
             if (this.charRef.otherDirection) {
                 this.x = this.charRef.x + this.charRef.width / 3 - this.width / 2;
-                this.y = this.charRef.y + this.maxHeight / 3 + this.height / -1.25;
             } else {
                 this.x = this.charRef.x + this.charRef.width / 1.5 - this.width /2 ;
-                this.y = this.charRef.y + this.maxHeight / 3 + this.height / -1.25;
             }
+            this.y = (this.charRef.y + (this.maxHeight / 3 * scaleY) + this.height / -1.25);
         }, 5);
     }
     
     updateSize(){
         setInterval(() => {
-            this.width = this.maxWidth * this.percentage / 100;
-            this.height = this.maxHeight * this.percentage / 100;
+            this.width = (this.maxWidth * this.percentage / 100) * scaleX;
+            this.height = (this.maxHeight * this.percentage / 100) * scaleY;
             this.playAnimation(this.IMAGES);
         }, 100);
     }

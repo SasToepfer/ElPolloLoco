@@ -1,9 +1,4 @@
 class Actor {
-    BASE_WIDTH = 720; // Ursprüngliche Breite
-    BASE_HEIGHT = 480; // Ursprüngliche Höhe
-
-    scaleX = canvas.width / BASE_WIDTH;
-    scaleY = canvas.height / BASE_HEIGHT;
     x = 120;
     y = 350;
     height = 100;
@@ -11,6 +6,20 @@ class Actor {
     img;
     currentImage = 0;
     imageCache = {};
+    collisionBox = { xOffset: 10, yOffset: 10, width: 10, height: 10 }
+
+    updateDimensions() {
+        this.width = this.baseWidth * scaleX;
+        this.height = this.baseHeight * scaleY;
+        this.y = this.baseY * scaleY;
+
+        this.collisionBox = {
+            xOffset: (this.baseCollisionBox?.xOffset || 0) * scaleX,
+            yOffset: (this.baseCollisionBox?.yOffset || 0) * scaleY,
+            width: (this.baseCollisionBox?.width || this.baseWidth) * scaleX,
+            height: (this.baseCollisionBox?.height || this.baseHeight) * scaleY,
+        };
+    }
 
     loadImage(path) {
         this.img = new Image();
@@ -19,7 +28,7 @@ class Actor {
 
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        // this.drawRect(ctx);
+        this.drawRect(ctx);
     }
 
     getCollisionBox() {
@@ -71,4 +80,6 @@ class Actor {
             this.imageCache[path] = img;
         });
     }
+
+    
 }

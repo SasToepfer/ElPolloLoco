@@ -1,13 +1,14 @@
 class Blob extends Entity {
-    width = 100;
-    height = 100;
-    y = 360;
+    baseWidth = 100;
+    baseHeight = 100;
+    baseY = 360;
     damage = 40;
     health = 20;
-    collisionBox = { xOffset: 30, yOffset: 50, width: 40, height: 40 }
+    baseCollisionBox = { xOffset: 30, yOffset: 50, width: 40, height: 40 }
     animState = "idle";
     IMAGES_ATTACK = [];
     IMAGES_WALKING = [];
+    IMAGES_HURT = [];
     world;
     otherDirection = false;
 
@@ -17,11 +18,14 @@ class Blob extends Entity {
         this.loadImages(this.IMAGES_ATTACK);
         this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Blob/Blob_Walk/Poring_Walk", 51);
         this.loadImages(this.IMAGES_WALKING);
+        this.createImageArray(this.IMAGES_HURT, "img/Enemy/Blob/Blob_Dead/Blob_Dead", 6);
+        this.loadImages(this.IMAGES_HURT);
         this.x = world.character.x + world.canvas.width;
-        this.speed = 0.5;
+        this.speed = 0.5 * scaleX;
         this.world = world;
         this.animate();
         this.nextAction();
+        this.updateDimensions();
     }
 
     animate() {
@@ -37,8 +41,17 @@ class Blob extends Entity {
         }, 1000 / 30);
     }
 
+    takeDamage(damage) {
+        if (this.health - damage > 0) {
+            this.health -= damage;
+        } else {
+            this.health = 0;
+        }
+        this.playAnimationWithArgs(this.IMAGES_HURT, 20, true, () => this.world.checkEnemyDead());
+    }
+
     nextAction() {
-        if (this.x - this.world.character.x <= 400) {
+        if (this.x - this.world.character.x <= 400 * scaleX) {
             this.speed = 0;
             this.animState = "attack"
         } else {
@@ -49,11 +62,7 @@ class Blob extends Entity {
 
     movement() {
         setInterval(() => {
-            if (this.animState == "attack") {
-                this.moveLeft();
-            }else {
-                this.moveLeft();
-            }
+            if (!this.fixedMovement) {this.moveLeft();}
          }, 1000 / 100);
     }
 }

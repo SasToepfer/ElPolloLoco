@@ -1,7 +1,7 @@
 class Endboss extends Entity {
-    height = this.height * 4;
-    width = this.width * 4;
-    y = 50;
+    baseHeight = 300;
+    baseWidth = 200;
+    baseY = 50;
     
     IMAGES_WALKING = [
         "img/4_enemie_boss_chicken/2_alert/G5.png",
@@ -17,7 +17,9 @@ class Endboss extends Entity {
     constructor(){
         super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
+        
         this.x = 7500;
+        this.updateDimensions();
         this.animate();
     }
 

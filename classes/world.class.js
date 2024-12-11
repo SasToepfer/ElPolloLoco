@@ -29,6 +29,25 @@ class World {
         this.setWorld();
         this.run();
         this.level.enemies.push(new Mage(this));
+        this.updateAllEntities();
+    }
+
+    updateAllEntities() {
+        // Update der Skalierung für den Charakter
+        this.character.updateDimensions();
+    
+        // Update der Skalierung für alle Hintergrundlayer
+        this.backgroundLayers.forEach(layer => {
+            layer.width *= scaleX;
+            layer.height *= scaleY;
+            layer.yPosition *= scaleY;
+        });
+        this.level.enemies.forEach(enemy => enemy.updateDimensions());
+        this.level.clouds.forEach(cloud => cloud.updateDimensions());
+        this.level.runes.forEach(rune => rune.updateDimensions());
+        this.hpFrame.updateDimensions();
+        this.hpBar.updateDimensions();
+        this.flame.updateDimensions();
     }
 
     loadBackground() {
@@ -41,12 +60,22 @@ class World {
 
     setWorld() {
         this.character.world = this;
+        this.spawnManarune();
         this.spawnClouds();
         this.spawnBlobEnemy();
         this.spawnMageEnemy();
+        this.spawnEndboss();
         setInterval(() => {
             this.removeOffscreen();
         }, 2000);
+    }
+
+    spawnManarune() {
+        this.level.runes.push(new Manarune());
+    }
+
+    spawnEndboss() {
+        this.level.enemies.push(new Endboss());
     }
 
     spawnClouds() {
@@ -95,6 +124,7 @@ class World {
             this.checkCollisions();
         }, 50);
     }
+
     /** Character Cast Spells */
     checkSpells(spell) {
         const currentTime = new Date().getTime();
@@ -129,7 +159,6 @@ class World {
         if (ent.health != 0) {
             this.enemySpells.push(fireball);
         }
-        
     }
 
     deflectFireball(ref) {
@@ -162,10 +191,9 @@ class World {
         });
         for (let i = this.spells.length - 1; i >= 0; i--) {
             let spell = this.spells[i];
-            this.level.enemies.forEach((enemy, j) => {
+            this.level.enemies.forEach((enemy) => {
                 if (spell.isColliding(enemy)) {
                     enemy.getHit(spell.damage);
-                    this.checkEnemyDead(enemy, j)
                     this.spells.splice(i, 1);
                 }
             });
@@ -185,9 +213,12 @@ class World {
         this.flame.percentage = 100;
     }
 
-    checkEnemyDead(enemy, j) {
-        if (enemy.isDead()) {
-            this.level.enemies.splice(j, 1);
+    checkEnemyDead() {
+        for (let index = 0; index < this.level.enemies.length; index++) {
+            const element = this.level.enemies[index];
+            if (element.isDead()) {
+                this.level.enemies.splice(index, 1);
+            }
         }
     }
 
@@ -196,7 +227,7 @@ class World {
             const offsetX = +this.camera_x * layer.speed; // Parallax-Bewegung
             const layerConfig = this.backgroundLayers[index];
 
-            this.ctx.drawImage(layer.img, offsetX, layerConfig.yPosition, layerConfig.width, layerConfig.height);
+            this.ctx.drawImage(layer.img, offsetX -200, layerConfig.yPosition, layerConfig.width, layerConfig.height);
 
             // Wiederholung für nahtlosen Scroll
             if (offsetX < 0) {

@@ -3,9 +3,14 @@ let ctx = canvas.getContext("2d");
 let startScreen;
 let keyboard = new Keyboard();
 let gameState = "startscreen"; // "startscreen", "game"
+const BASE_WIDTH = 720; // Ursprüngliche Breite
+const BASE_HEIGHT = 480; // Ursprüngliche Höhe
+
+let scaleX = canvas.width / BASE_WIDTH;
+let scaleY = canvas.height / BASE_HEIGHT;
 
 let startBackground = new Image();
-startBackground.src = "img/startscreen/StartBG.png";
+startBackground.src = "img/startscreen/StartBG.jpg";
 let startButton = { x: canvas.width / 2 - canvas.width / 4.5 / 2, y: canvas.height / 2 - canvas.height / 12 / 2, width: canvas.width / 4.5, height: canvas.height /8, text: "Start Game" };
 
 let fullscreenIcon = new Image();
@@ -44,8 +49,9 @@ function render() {
     }
 
     renderStartButton(); // Zeichne den Start-Button
-    renderFullscreenButton(); // Zeichne den Fullscreen-Button
-
+    if (canvas.width > 719) {
+        renderFullscreenButton(); // Zeichne den Fullscreen-Button
+    }
     if (gameState !== "game") requestAnimationFrame(render);
 }
 
@@ -80,8 +86,9 @@ function renderStartscreen() {
 }
 
 function startGame() {
+    gameState = "game";
     world = new World(canvas, keyboard); 
-    requestAnimationFrame(() => world.draw()); 
+   
 }
 
 function renderStartButton() {
@@ -162,7 +169,15 @@ document.addEventListener("fullscreenchange", () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     } else {
-        canvas.width = 720; // Ursprüngliche Breite
-        canvas.height = 480; // Ursprüngliche Höhe
+        canvas.width = BASE_WIDTH; // Ursprüngliche Breite
+        canvas.height = BASE_HEIGHT; // Ursprüngliche Höhe
     }
+    scaleX = canvas.width / BASE_WIDTH;
+    scaleY = canvas.height / BASE_HEIGHT;
+
+    // Aktualisiere alle Objekte im Spiel
+    if (gameState == "game") {
+        world.updateAllEntities();
+    }
+    
 });

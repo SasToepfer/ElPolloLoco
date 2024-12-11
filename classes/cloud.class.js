@@ -1,6 +1,7 @@
 class Cloud extends Entity {
-    width = 300;
-    height = 250;
+    baseWidth = 300;
+    baseHeight = 250;
+    baseY = 0;
 
     IMAGES = [
         "img/clouds/cloud1.png",
@@ -13,10 +14,11 @@ class Cloud extends Entity {
     constructor(x) {
         super().loadImage(this.getRandomImage());
         this.x = x;
-        this.y = 0 + (Math.random() - 0.5) * 30;
+        this.baseY = 0 + (Math.random() - 0.5) * 30;
         this.speed = 0.2 + Math.random() * 0.7;
-        this.width = 150 + (Math.random() - 0.5) * 40;
-        this.height = 100 + (Math.random() - 0.5) * 20;
+        this.baseWidth = 150 + (Math.random() - 0.5) * 40;
+        this.baseHeight = 100 + (Math.random() - 0.5) * 20;
+        this.updateDimensions();
         this.animate();
     }
 
