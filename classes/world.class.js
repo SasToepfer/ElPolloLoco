@@ -33,10 +33,7 @@ class World {
     }
 
     updateAllEntities() {
-        // Update der Skalierung für den Charakter
         this.character.updateDimensions();
-    
-        // Update der Skalierung für alle Hintergrundlayer
         this.backgroundLayers.forEach(layer => {
             layer.width *= scaleX;
             layer.height *= scaleY;
@@ -63,7 +60,7 @@ class World {
         this.spawnManarune();
         this.spawnClouds();
         this.spawnBlobEnemy();
-        this.spawnMageEnemy();
+        // this.spawnMageEnemy();
         this.spawnEndboss();
         setInterval(() => {
             this.removeOffscreen();
@@ -120,9 +117,8 @@ class World {
     /** Game Checks */
     run() {
         setInterval(() => {
-            this.checkSpells();
             this.checkCollisions();
-        }, 50);
+        }, 30);
     }
 
     /** Character Cast Spells */
@@ -134,7 +130,6 @@ class World {
             case "deflect": return currentTime - this.lastDeflectTime >= cooldown ? true : false;
             default: break;
         }
-
     }
 
     castFireball() {
@@ -142,9 +137,9 @@ class World {
         this.lastFireballTime = new Date().getTime();
         this.flame.percentage -= 20;
         if (this.character.otherDirection) {
-            fireball = new Spell(this.character.x, this.character.y, this.character.otherDirection);
+            fireball = new Spell(this.character.x, this.character.y + this.character.height / 6, this.character.otherDirection);
         } else {
-            fireball = new Spell(this.character.x + this.character.width / 1.5, this.character.y + this.character.height / 4, this.character.otherDirection);
+            fireball = new Spell(this.character.x + this.character.width / 1.5, this.character.y + this.character.height / 6, this.character.otherDirection);
         }
         this.spells.push(fireball);
     }
@@ -152,9 +147,9 @@ class World {
     castEnemyFireball(ent) {
         let fireball = "";
         if (ent.otherDirection) {
-            fireball = new Spell(ent.x, ent.y, false);
+            fireball = new Spell(ent.x, ent.y, false, false);
         } else {
-            fireball = new Spell(ent.x, ent.y + ent.height / 4, true);
+            fireball = new Spell(ent.x, ent.y + ent.height / 4, true, false);
         }
         if (ent.health != 0) {
             this.enemySpells.push(fireball);
@@ -163,32 +158,38 @@ class World {
 
     deflectFireball(ref) {
         let fireball = "";
-        fireball = new Spell(ref.x, ref.y, false);
+        fireball = new Spell(ref.x, ref.y, false, false);
         this.spells.push(fireball);
     }
 
 
     /** CollisionCheck */
     checkCollisions() {
+        this.checkEnemyCollision();
+        this.checkEnemySpellCollision();
+        this.checkCharacterSpellCollision();
+        this.checkRuneCollision();
+    }
+
+    checkEnemyCollision() {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
-                this.character.getHit(enemy.damage)
-                this.hpBar.setPercentage(this.character.health)
+                if (this.character.isInvincible) { return; }
+                if (enemy instanceof Blob && this.character.isJumpingOn(enemy)) {
+                    enemy.getHit(this.character.damage);
+                    this.character.isInvincible = true; // Charakter wird vorübergehend unverwundbar
+                    setTimeout(() => {
+                        this.character.isInvincible = false; // Nach kurzer Zeit wieder verwundbar
+                    }, 400);
+                } else {
+                    this.character.getHit(enemy.damage);
+                    this.hpBar.setPercentage(this.character.health);
+                }
             }
         });
-        this.enemySpells.forEach((spell) => {
-            if (this.character.isColliding(spell)) {
-                this.character.getHit(spell.damage)
-                this.hpBar.setPercentage(this.character.health)
-            }
-        });
-        this.level.runes.forEach((rune, i) => {
-            if (this.character.isColliding(rune) && (this.keyboard.D || this.keyboard.DOWN)) {
-                this.flame.percentage = 0;
-                this.character.playAnimationWithArgs(this.character.IMAGES_GETMANA, 20, true, () => { this.character.fixedMovement = false, this.character.blockAnimation = false, this.character.fillMana() });
-                this.level.runes.splice(i, 1);
-            }
-        });
+    }
+
+    checkCharacterSpellCollision() {
         for (let i = this.spells.length - 1; i >= 0; i--) {
             let spell = this.spells[i];
             this.level.enemies.forEach((enemy) => {
@@ -198,6 +199,25 @@ class World {
                 }
             });
         }
+    }
+
+    checkEnemySpellCollision() {
+        this.enemySpells.forEach((spell) => {
+            if (this.character.isColliding(spell)) {
+                this.character.getHit(spell.damage)
+                this.hpBar.setPercentage(this.character.health)
+            }
+        });
+    }
+
+    checkRuneCollision() {
+        this.level.runes.forEach((rune, i) => {
+            if (this.character.isColliding(rune) && (this.keyboard.D || this.keyboard.DOWN)) {
+                this.flame.percentage = 0;
+                this.character.playAnimationWithArgs(this.character.IMAGES_GETMANA, 20, true, () => { this.character.fixedMovement = false, this.character.blockAnimation = false, this.character.fillMana() });
+                this.level.runes.splice(i, 1);
+            }
+        });
     }
 
     checkDeflect() {
@@ -227,7 +247,7 @@ class World {
             const offsetX = +this.camera_x * layer.speed; // Parallax-Bewegung
             const layerConfig = this.backgroundLayers[index];
 
-            this.ctx.drawImage(layer.img, offsetX -200, layerConfig.yPosition, layerConfig.width, layerConfig.height);
+            this.ctx.drawImage(layer.img, offsetX - 200, layerConfig.yPosition, layerConfig.width, layerConfig.height);
 
             // Wiederholung für nahtlosen Scroll
             if (offsetX < 0) {

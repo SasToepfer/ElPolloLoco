@@ -57,6 +57,7 @@ class Mage extends Entity {
         } else {
             this.health = 0;
         }
+        this.blockAnimation = false;
         this.playAnimationWithArgs(this.IMAGES_HURT, 100, true, () => this.world.checkEnemyDead());
     }
 

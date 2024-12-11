@@ -31,12 +31,13 @@ class Blob extends Entity {
     animate() {
         this.movement();
         setInterval(() => {
-            if (this.blockAnimation) {
+            if (this.blockAnimation || this.isDead()) {
                 return
             } else if (this.animState == "walk") {
                 this.playAnimationWithArgs(this.IMAGES_WALKING, 30, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 0.5, 10);
             } else {
-                this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 6, 16);
+                this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 0, 16);
+                // this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 6, 16);
             }
         }, 1000 / 30);
     }
@@ -47,10 +48,12 @@ class Blob extends Entity {
         } else {
             this.health = 0;
         }
-        this.playAnimationWithArgs(this.IMAGES_HURT, 20, true, () => this.world.checkEnemyDead());
+        this.blockAnimation = false;
+        this.playAnimationWithArgs(this.IMAGES_HURT, 70, true, () => this.world.checkEnemyDead());
     }
 
     nextAction() {
+        if (this.isDead()) {return}
         if (this.x - this.world.character.x <= 400 * scaleX) {
             this.speed = 0;
             this.animState = "attack"

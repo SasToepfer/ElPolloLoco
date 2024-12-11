@@ -53,6 +53,17 @@ class Entity extends Actor {
         this.speedY = 22 * scaleY;
     }
 
+    isJumpingOn(enemy) {
+        const charBox = this.getCollisionBox();
+        const enemyBox = enemy.getCollisionBox();
+    
+        // Prüfen, ob der Charakter über dem Gegner ist
+        const isAbove = charBox.y + charBox.height <= enemyBox.y + enemyBox.height / 2;
+        const isFalling = this.speedY < 0; // Geschwindigkeit nach unten
+    
+        return isAbove && isFalling;
+    }
+
     /**
      * Play animation with function call at the end and function call at specific frame
      * @param {Array} arr 

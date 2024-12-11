@@ -4,8 +4,9 @@ class Spell extends Entity {
     baseHeight;
     baseWidth;
 
-    constructor(x, y, otherDirection) {
-        super().loadImage("img/effects/fireball.png");
+    constructor(x, y, otherDirection, isChar = true) {
+        super()
+        isChar ? this.loadImage("img/effects/charFBall.png") : this.loadImage("img/effects/enemyFBall.png");
         this.x = x;
         this.y = y;
         this.baseWidth = 50; // Spezifische Werte für Spell

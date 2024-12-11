@@ -4,6 +4,7 @@ class Character extends Entity {
     speed = 3;
     baseY = 60;
     mana = 100;
+    damage = 20;
     
     isInvincible = false;
     hurtTimeout = null;
