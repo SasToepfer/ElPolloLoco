@@ -28,7 +28,7 @@ class Actor {
 
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        this.drawRect(ctx);
+        // this.drawRect(ctx);
     }
 
     getCollisionBox() {

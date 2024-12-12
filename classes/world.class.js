@@ -5,35 +5,47 @@ class World {
     keyboard;
     ctx;
     backgroundLayers = [
-        { img: 'img/background/Ground_00011_.jpg', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480 }, // Weite Objekte
+        { img: 'img/background/Ground_00011_.jpg', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480 }, 
         // { img: 'img/layer2.png', speed: 0.5 }, // Gebäude
-        { img: 'img/background/sdpixel_floor_00002_.jpg', speed: 1.0, yPosition: 390, width: 4096 / 1, height: 200 }, // Bodennahe Details
+        { img: 'img/background/sdpixel_floor_00002_.jpg', speed: 1.0, yPosition: 390, width: 4096 / 1, height: 200 }
     ];
     backgroundImages = [];
     camera_x = 0;
     hpFrame = new Statusbar(true, 20, 0, 300, 60);
     hpBar = new Statusbar(false, 80, 20, 180, 20);
+    userInterface = new UserInterface(this, "keyboardDisplay", "img/ui/keyboard.png" ,20, 50, 50, 40)
+    muteButton = new UserInterface(this, "toggleSound", "img/ui/sound_on.png" , 30 + this.hpFrame.width, 15, 30, 30)
     flame = new Manaflame(this.character);
     lastFireballTime = 0;
     lastDeflectTime = 0;
     spells = [];
     enemySpells = [];
     isGameOver = false;
+    collisionManager = new CollisionManager(this.character, this.flame, keyboard, this.level, this.hpBar);
+    spawnManager = new SpawnManager(this);
+    audioManager = new SoundManager();
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
-        this.loadBackground()
+        this.audioManager.playAudio("backgroundMusic");
+        this.muteAllSounds(false);
+        this.loadBackground();
         this.draw();
         this.setWorld();
         this.run();
-        this.level.enemies.push(new Mage(this));
         this.updateAllEntities();
     }
 
+    muteAllSounds(bool) {
+        this.audioManager.muteSound(bool);
+        this.character.audioManager.muteSound(bool);
+        this.level.enemies.forEach(e => {e.audioManager.muteSound(bool)});
+    }
+
     updateAllEntities() {
-        this.character.updateDimensions();
+        this.character.updateFullscreen();
         this.backgroundLayers.forEach(layer => {
             layer.width *= scaleX;
             layer.height *= scaleY;
@@ -57,68 +69,30 @@ class World {
 
     setWorld() {
         this.character.world = this;
-        this.spawnManarune();
-        this.spawnClouds();
-        this.spawnBlobEnemy();
-        // this.spawnMageEnemy();
-        this.spawnEndboss();
+        this.spawnManager.startSpawning();
         setInterval(() => {
-            this.removeOffscreen();
+            this.spawnManager.removeOffscreen();
         }, 2000);
     }
 
-    spawnManarune() {
-        this.level.runes.push(new Manarune());
-    }
-
-    spawnEndboss() {
-        this.level.enemies.push(new Endboss());
-    }
-
-    spawnClouds() {
-        setTimeout(() => {
-            if (!this.isGameOver) {
-                this.level.clouds.push(new Cloud(this.character.x + this.canvas.width));
-                this.spawnClouds();
-            }
-        }, 5000 + Math.random() * 4000);
-    }
-
-    spawnBlobEnemy() {
-        setTimeout(() => {
-            if (!this.isGameOver) {
-                this.level.enemies.push(new Blob(this));
-                this.spawnBlobEnemy();
-            }
-        }, 5000 + Math.random() * 4000);
-    }
-    spawnMageEnemy() {
-        setTimeout(() => {
-            if (!this.isGameOver) {
-                this.level.enemies.push(new Mage(this));
-                this.spawnMageEnemy();
-            }
-        }, 15000 + Math.random() * 10000);
-    }
-
-    removeOffscreen() {
-        this.level.clouds.forEach((cloud, index) => {
-            if (this.character.x - 500 >= cloud.x) {
-                this.level.clouds.splice(index, 1);
-            }
-        });
-        this.level.enemies.forEach((enemy, index) => {
-            if (this.character.x - 500 >= enemy.x) {
-                this.level.enemies.splice(index, 1);
-            }
-        });
+    checkEnemyDead() {
+        this.spawnManager.checkEnemyDead();
     }
 
     /** Game Checks */
     run() {
+        this.level.enemies.push(new Blob(this));
         setInterval(() => {
             this.checkCollisions();
         }, 30);
+    }
+
+    /** CollisionCheck */
+    checkCollisions() {
+        this.collisionManager.checkEnemyCollision();
+        this.collisionManager.checkCharacterSpellCollision(this.spells);
+        this.collisionManager.checkEnemySpellCollision(this.enemySpells);
+        this.collisionManager.checkRuneCollision();
     }
 
     /** Character Cast Spells */
@@ -155,71 +129,7 @@ class World {
             this.enemySpells.push(fireball);
         }
     }
-
-    deflectFireball(ref) {
-        let fireball = "";
-        fireball = new Spell(ref.x, ref.y, false, false);
-        this.spells.push(fireball);
-    }
-
-
-    /** CollisionCheck */
-    checkCollisions() {
-        this.checkEnemyCollision();
-        this.checkEnemySpellCollision();
-        this.checkCharacterSpellCollision();
-        this.checkRuneCollision();
-    }
-
-    checkEnemyCollision() {
-        this.level.enemies.forEach((enemy) => {
-            if (this.character.isColliding(enemy)) {
-                if (this.character.isInvincible) { return; }
-                if (enemy instanceof Blob && this.character.isJumpingOn(enemy)) {
-                    enemy.getHit(this.character.damage);
-                    this.character.isInvincible = true; // Charakter wird vorübergehend unverwundbar
-                    setTimeout(() => {
-                        this.character.isInvincible = false; // Nach kurzer Zeit wieder verwundbar
-                    }, 400);
-                } else {
-                    this.character.getHit(enemy.damage);
-                    this.hpBar.setPercentage(this.character.health);
-                }
-            }
-        });
-    }
-
-    checkCharacterSpellCollision() {
-        for (let i = this.spells.length - 1; i >= 0; i--) {
-            let spell = this.spells[i];
-            this.level.enemies.forEach((enemy) => {
-                if (spell.isColliding(enemy)) {
-                    enemy.getHit(spell.damage);
-                    this.spells.splice(i, 1);
-                }
-            });
-        }
-    }
-
-    checkEnemySpellCollision() {
-        this.enemySpells.forEach((spell) => {
-            if (this.character.isColliding(spell)) {
-                this.character.getHit(spell.damage)
-                this.hpBar.setPercentage(this.character.health)
-            }
-        });
-    }
-
-    checkRuneCollision() {
-        this.level.runes.forEach((rune, i) => {
-            if (this.character.isColliding(rune) && (this.keyboard.D || this.keyboard.DOWN)) {
-                this.flame.percentage = 0;
-                this.character.playAnimationWithArgs(this.character.IMAGES_GETMANA, 20, true, () => { this.character.fixedMovement = false, this.character.blockAnimation = false, this.character.fillMana() });
-                this.level.runes.splice(i, 1);
-            }
-        });
-    }
-
+    
     checkDeflect() {
         this.enemySpells.forEach((spell, i) => {
             if (this.character.isColliding(spell, true)) {
@@ -229,29 +139,23 @@ class World {
         });
     }
 
+    deflectFireball(ref) {
+        let fireball = "";
+        fireball = new Spell(ref.x, ref.y, false, false);
+        this.spells.push(fireball);
+    }
+
     fillCharMana() {
         this.flame.percentage = 100;
     }
 
-    checkEnemyDead() {
-        for (let index = 0; index < this.level.enemies.length; index++) {
-            const element = this.level.enemies[index];
-            if (element.isDead()) {
-                this.level.enemies.splice(index, 1);
-            }
-        }
-    }
-
     drawBackground() {
         this.backgroundImages.forEach((layer, index) => {
-            const offsetX = +this.camera_x * layer.speed; // Parallax-Bewegung
+            const offsetX = +this.camera_x * layer.speed; // Parallax
             const layerConfig = this.backgroundLayers[index];
-
             this.ctx.drawImage(layer.img, offsetX - 200, layerConfig.yPosition, layerConfig.width, layerConfig.height);
-
-            // Wiederholung für nahtlosen Scroll
             if (offsetX < 0) {
-                this.ctx.drawImage(layer.img, offsetX + layerConfig.width, layerConfig.yPosition, layerConfig.width, layerConfig.height);
+                this.ctx.drawImage(layer.img, offsetX + layerConfig.width -200, layerConfig.yPosition, layerConfig.width, layerConfig.height);
             }
         });
     }
@@ -259,13 +163,16 @@ class World {
     /** World Draw */
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
         this.drawBackground();
-
         this.ctx.translate(this.camera_x, 0);
+        this.addCameraIndependet();
+        this.ctx.translate(-this.camera_x, 0);
+        this.addCameraFixed();
+        let self = this;
+        requestAnimationFrame(() => self.draw())
+    }
 
-        /** Moving independent to camera */
-        // this.addObjectsToMap(this.level.backgrounds);
+    addCameraIndependet() {
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.runes);
         this.addObjectsToMap(this.level.enemies);
@@ -273,16 +180,14 @@ class World {
         this.addObjectsToMap(this.enemySpells);
         this.addToMap(this.character);
         this.addToMap(this.flame);
+    }
 
-
-        this.ctx.translate(-this.camera_x, 0);
-
-        /** Moving fixed to camera */
+    addCameraFixed() {
         this.addToMap(this.hpBar);
         this.addToMap(this.hpFrame);
-
-        let self = this;
-        requestAnimationFrame(() => self.draw())
+        this.addToMap(this.userInterface);
+        this.addToMap(this.muteButton);
+        this.userInterface.showKeyboardDisplay(this.ctx);
     }
 
     /** Add single Object to map for drawing */
@@ -294,7 +199,6 @@ class World {
     addToMap(ent) {
         if (ent.otherDirection) { this.flipImage(ent); }
         ent.draw(this.ctx);
-        // ent.drawRect(this.ctx);
         if (ent.otherDirection) { this.flipImageBack(ent); }
     }
 
@@ -313,6 +217,7 @@ class World {
     gameOver() {
         this.isGameOver = true;
         this.flame.percentage = 0;
+        this.muteAllSounds(true);
         setTimeout(() => {
             this.level.enemies = [];
             this.character.x = 120;

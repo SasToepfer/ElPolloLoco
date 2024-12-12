@@ -14,7 +14,7 @@ startBackground.src = "img/startscreen/StartBG.jpg";
 let startButton = { x: canvas.width / 2 - canvas.width / 4.5 / 2, y: canvas.height / 2 - canvas.height / 12 / 2, width: canvas.width / 4.5, height: canvas.height /8, text: "Start Game" };
 
 let fullscreenIcon = new Image();
-fullscreenIcon.src = "img/Fullscreen.png";
+fullscreenIcon.src = "img/ui/Fullscreen.png";
 let fullscreenButton = {x: canvas.width - 50, y: canvas.height - 50, width: 40, height: 40};
 
 function init() {
@@ -97,7 +97,7 @@ function renderStartButton() {
     let buttonX = canvas.width / 2 - buttonWidth / 2;
     let buttonY = canvas.height / 2 - buttonHeight / 2;
 
-     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
     ctx.fillStyle = "white";
     ctx.font = `${Math.min(buttonHeight / 2.5, 20)}px Arial`; // Dynamische Schriftgröße
@@ -122,8 +122,10 @@ canvas.addEventListener("click", (event) => {
         mouseX >= startButton.x &&
         mouseX <= startButton.x + startButton.width &&
         mouseY >= startButton.y &&
-        mouseY <= startButton.y + startButton.height
+        mouseY <= startButton.y + startButton.height &&
+        gameState != "game"
     ) {
+        pushIndex = 0;
         gameState = "push";
     }
 
@@ -131,7 +133,8 @@ canvas.addEventListener("click", (event) => {
         mouseX >= fullscreenButton.x &&
         mouseX <= fullscreenButton.x + fullscreenButton.width &&
         mouseY >= fullscreenButton.y &&
-        mouseY <= fullscreenButton.y + fullscreenButton.height
+        mouseY <= fullscreenButton.y + fullscreenButton.height &&
+        gameState != "game"
     ) {
         toggleFullscreen();
     }

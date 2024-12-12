@@ -8,6 +8,7 @@ class Entity extends Actor {
     fixedMovement = false;
     blockAnimation = false;
     world;
+    audioManager = new SoundManager();
 
     createImageArray(arr, path, length, offset = 0) {
         for (let index = offset; index < length; index++) {

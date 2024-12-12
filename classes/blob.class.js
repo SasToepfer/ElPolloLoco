@@ -34,10 +34,9 @@ class Blob extends Entity {
             if (this.blockAnimation || this.isDead()) {
                 return
             } else if (this.animState == "walk") {
-                this.playAnimationWithArgs(this.IMAGES_WALKING, 30, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 0.5, 10);
+                this.playAnimationWithArgs(this.IMAGES_WALKING, 30, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => {(setTimeout(() => {this.audioManager.playAudio("slimeWalk"), this.speed = 0}, 800)) ,this.speed = 0.5}, 10);
             } else {
-                this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 0, 16);
-                // this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 6, 16);
+                this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 6, 16);
             }
         }, 1000 / 30);
     }
@@ -49,7 +48,7 @@ class Blob extends Entity {
             this.health = 0;
         }
         this.blockAnimation = false;
-        this.playAnimationWithArgs(this.IMAGES_HURT, 70, true, () => this.world.checkEnemyDead());
+        this.playAnimationWithArgs(this.IMAGES_HURT, 70, true, () => this.world.checkEnemyDead(), () => this.audioManager.playAudio("slimeDead"), 1);
     }
 
     nextAction() {

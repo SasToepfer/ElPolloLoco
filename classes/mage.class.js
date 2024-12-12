@@ -42,7 +42,7 @@ class Mage extends Entity {
             if (this.blockAnimation) {
                 return
             } else if (this.animState == "cast") {
-                this.playAnimationWithArgs(this.IMAGES_CAST, 30, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.world.castEnemyFireball(this),35);
+                this.playAnimationWithArgs(this.IMAGES_CAST, 30, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => {this.world.castEnemyFireball(this), this.audioManager.playAudio("mageCast")},35);
             } else if (this.animState == "walk") {
                 this.playAnimation(this.IMAGES_WALKING);
             } else {
@@ -58,6 +58,7 @@ class Mage extends Entity {
             this.health = 0;
         }
         this.blockAnimation = false;
+        this.audioManager.playAudio("mageDead");
         this.playAnimationWithArgs(this.IMAGES_HURT, 100, true, () => this.world.checkEnemyDead());
     }
 

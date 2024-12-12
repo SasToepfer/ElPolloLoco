@@ -76,35 +76,35 @@ function renderStartAnimation() {
     }
 }
 
-function renderFullscreenAnimation() {
-    // Berechne die Mitte des Fullscreen-Buttons
-    let buttonCenterX = fullscreenButton.x + fullscreenButton.width / 2;
-    let buttonCenterY = fullscreenButton.y + fullscreenButton.height / 2;
+// function renderFullscreenAnimation() {
+//     // Berechne die Mitte des Fullscreen-Buttons
+//     let buttonCenterX = fullscreenButton.x + fullscreenButton.width / 2;
+//     let buttonCenterY = fullscreenButton.y + fullscreenButton.height / 2;
 
-    // Entfernung der Maus zur Mitte des Fullscreen-Buttons berechnen
-    let distance = Math.sqrt(
-        (mouseX - buttonCenterX) ** 2 + (mouseY - buttonCenterY) ** 2
-    );
+//     // Entfernung der Maus zur Mitte des Fullscreen-Buttons berechnen
+//     let distance = Math.sqrt(
+//         (mouseX - buttonCenterX) ** 2 + (mouseY - buttonCenterY) ** 2
+//     );
 
-    // Maximale Entfernung, die eine Animation triggert
-    let maxFullscreenDistance = Math.max(fullscreenButton.width, fullscreenButton.height) * 3;
+//     // Maximale Entfernung, die eine Animation triggert
+//     let maxFullscreenDistance = Math.max(fullscreenButton.width, fullscreenButton.height) * 3;
 
-    // Fortschritt der Animation (zwischen 0 und 1, basierend auf Entfernung)
-    let progress = Math.max(0, Math.min(1, 1 - distance / maxFullscreenDistance));
+//     // Fortschritt der Animation (zwischen 0 und 1, basierend auf Entfernung)
+//     let progress = Math.max(0, Math.min(1, 1 - distance / maxFullscreenDistance));
 
-    // Bestimme das aktuelle Frame der Animation
-    let currentFrame = Math.floor(progress * (startFrames.length - 1));
+//     // Bestimme das aktuelle Frame der Animation
+//     let currentFrame = Math.floor(progress * (startFrames.length - 1));
 
-    // Render das aktuelle Frame der Animation
-    let fullscreenImage = startFrames[currentFrame];
-    if (fullscreenImage && fullscreenImage.complete) {
-        ctx.drawImage(
-            fullscreenImage,
-            fullscreenButton.x, // Gleiche Position wie der Fullscreen-Button
-            fullscreenButton.y,
-            fullscreenButton.width,
-            fullscreenButton.height
-        );
-    }
-}
+//     // Render das aktuelle Frame der Animation
+//     let fullscreenImage = startFrames[currentFrame];
+//     if (fullscreenImage && fullscreenImage.complete) {
+//         ctx.drawImage(
+//             fullscreenImage,
+//             fullscreenButton.x, // Gleiche Position wie der Fullscreen-Button
+//             fullscreenButton.y,
+//             fullscreenButton.width,
+//             fullscreenButton.height
+//         );
+//     }
+// }
 
