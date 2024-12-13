@@ -13,6 +13,10 @@ class Mage extends Entity {
     world;
     otherDirection = false;
 
+    /**
+     * Creates an instance of the Mage.
+     * @param {World} world - The world instance that the Mage belongs to.
+     */
     constructor(world) {
         super().loadImage("img/Enemy/Mage/Mage_Idle/Mage_Idle0000.png");
         this.createImageArray(this.IMAGES_IDLE, "img/Enemy/Mage/Mage_Idle/Mage_Idle", 120);
@@ -31,9 +35,12 @@ class Mage extends Entity {
         this.nextAction();
     }
 
+    /**
+     * Handles the Mage's animation and state updates.
+     */
     animate() {
         this.movement();
-        setInterval(() => {
+        let animInterwal = setInterval(() => {
             if (this.isDead()) 
                 {
                     clearInterval();
@@ -48,9 +55,14 @@ class Mage extends Entity {
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
             }
+            if (this.world.isGameOver) {clearInterval(animInterwal)}
         }, 1000 / 30);
     }
 
+    /**
+     * Handles damage taken by the Mage and updates health accordingly.
+     * @param {number} damage - The amount of damage to take.
+     */
     takeDamage(damage) {
         if (this.health - damage > 0) {
             this.health -= damage;
@@ -62,8 +74,10 @@ class Mage extends Entity {
         this.playAnimationWithArgs(this.IMAGES_HURT, 100, true, () => this.world.checkEnemyDead());
     }
 
+    /**
+     * Determines the next action of the Mage based on a random probability.
+     */
     nextAction() {
-        // let randomAction = 60;
         if (this.isDead())  {return;}
         let randomAction = Math.random() * 100;
         if (randomAction <= 50) {
@@ -80,13 +94,18 @@ class Mage extends Entity {
         }
     }
 
+    /**
+     * Handles the movement of the Mage.
+     */
     movement() {
-        setInterval(() => {
+        let movementInterwal = setInterval(() => {
             if (this.animState != "walk" || this.fixedMovement) {
                 return;
             }else {
                 this.moveLeft();
             }
+            if (this.world.isGameOver) {clearInterval(movementInterwal);}
          }, 1000 / 100);
+         
     }
 }

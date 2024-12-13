@@ -12,6 +12,10 @@ class Blob extends Entity {
     world;
     otherDirection = false;
 
+    /**
+     * Creates an instance of the Blob.
+     * @param {World} world - The world instance that the Blob belongs to.
+     */
     constructor(world) {
         super().loadImage("img/Enemy/Blob/Blob_Walk/Poring_Walk0000.png");
         this.createImageArray(this.IMAGES_ATTACK, "img/Enemy/Blob/Blob_Attack/Poring_Attack", 78);
@@ -28,9 +32,12 @@ class Blob extends Entity {
         this.updateDimensions();
     }
 
+    /**
+     * Handles the animation and state updates for the Blob.
+     */
     animate() {
         this.movement();
-        setInterval(() => {
+        animinterwal = setInterval(() => {
             if (this.blockAnimation || this.isDead()) {
                 return
             } else if (this.animState == "walk") {
@@ -38,9 +45,14 @@ class Blob extends Entity {
             } else {
                 this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 6, 16);
             }
+            if (this.world.isGameOver) {clearInterval(animInterwal)}
         }, 1000 / 30);
     }
 
+    /**
+     * Handles damage taken by the Blob and updates health accordingly.
+     * @param {number} damage - The amount of damage to take.
+     */
     takeDamage(damage) {
         if (this.health - damage > 0) {
             this.health -= damage;
@@ -51,6 +63,9 @@ class Blob extends Entity {
         this.playAnimationWithArgs(this.IMAGES_HURT, 70, true, () => this.world.checkEnemyDead(), () => this.audioManager.playAudio("slimeDead"), 1);
     }
 
+    /**
+     * Determines the next action of the Blob based on its position relative to the character.
+     */
     nextAction() {
         if (this.isDead()) {return}
         if (this.x - this.world.character.x <= 400 * scaleX) {
@@ -62,9 +77,13 @@ class Blob extends Entity {
         }
     }
 
+    /**
+     * Handles the movement of the Blob when it is not fixed in place.
+     */
     movement() {
-        setInterval(() => {
+        let movementInterwal = setInterval(() => {
             if (!this.fixedMovement) {this.moveLeft();}
          }, 1000 / 100);
+         if (this.world.isGameOver) {clearInterval(movementInterwal);}
     }
 }

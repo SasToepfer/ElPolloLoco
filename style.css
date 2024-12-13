@@ -10,6 +10,50 @@ canvas {
     display: block;
 }
 
+.mobile-buttons {
+    display: none;
+}
+
+.button-wrapper {
+    width: auto;
+
+}
+
+#btnFireball {
+    background-image: url("img/Char/CastFireball/CastFireball0010.png");
+}
+
+#btnJump {
+    background-image: url("img/Char/Jump/CatniJump0009.png");
+}
+
+#btnDeflect {
+    background-image: url("img/Char/Deflect/deflect0010.png");
+}
+
+.move-button {
+    background-image: url("img/ui/left-arrow.png");
+    
+}
+
+.base-button {
+    background-color: rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    width: 12vh;
+    height: 12vh;
+    border-width: 0;
+    border-radius: 50%;
+}
+
+.rotate-90 {
+    rotate: 270deg;
+}
+
+.rotate-180 {
+    rotate: 180deg;
+}
+
+
 @media only screen and (max-width: 720px) {
     canvas {
         width: 100%;
@@ -23,5 +67,12 @@ canvas {
     }
     h1 {
         display: none;
+    }
+    .mobile-buttons {
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        top: 85vh;
+        width: 95%;
     }
 }

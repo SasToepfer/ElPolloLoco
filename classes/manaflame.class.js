@@ -14,6 +14,10 @@ class Manaflame extends Entity {
         "img/effects/flamme-5.png",
     ]
 
+    /**
+     * Creates an instance of the Manaflame.
+     * @param {Character} characterRef - The reference to the character associated with the mana flame.
+     */
     constructor(characterRef) {
         super().loadImage("img/effects/flamme.gif");
         this.loadImages(this.IMAGES);
@@ -22,7 +26,9 @@ class Manaflame extends Entity {
         this.updateSize();
     }
 
-
+    /**
+     * Updates the position of the mana flame based on the character's position and direction.
+     */
     updatePos(){
         setInterval(() => {
             if (this.charRef.otherDirection) {
@@ -34,6 +40,9 @@ class Manaflame extends Entity {
         }, 5);
     }
     
+    /**
+     * Updates the size of the mana flame based on the current percentage.
+     */
     updateSize(){
         setInterval(() => {
             this.width = (this.maxWidth * this.percentage / 100) * scaleX;

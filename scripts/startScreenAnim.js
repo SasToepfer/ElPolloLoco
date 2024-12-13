@@ -7,11 +7,16 @@ let startFrames = [];
 let pushFrames = [];
 let idleIndex = 0;
 let pushIndex = 0;
-let idleInterval;
-let idleFrameDelay = 4; 
-let idleFrameCounter = 0; 
+let lastIdleFrameTime = 0;
+let idleFrameDelay = 60;
 let pushFrameCounter = 0; 
 
+/**
+ * Creates an array of images for animations.
+ * @param {Array} arr - The array to push the image frames into.
+ * @param {String} path - Path to the images, which should include a format for numbered images (e.g., 0000.png to 9999.png).
+ * @param {number} length - The number of images to load into the array.
+ */
 function createImageArray(arr, path, length) {
     for (let index = 0; index < length; index++) {
         let frame = new Image();
@@ -26,20 +31,26 @@ function createImageArray(arr, path, length) {
     }
 }
 
-// Idle-Animation rendern
+/**
+ * Renders the idle animation when the mouse is not in the canvas.
+ */
 function renderIdleAnimation() {
-    let idleImage = idleFrames[idleIndex];
-    if (idleImage.complete) { // Nur wenn das Bild vollständig geladen ist
-        ctx.drawImage(idleImage, 0, 0, canvas.width, canvas.height); 
-    }
-    idleFrameCounter++;
-    if (idleFrameCounter >= idleFrameDelay) {
+    const now = Date.now();
+    if (now - lastIdleFrameTime >= idleFrameDelay) {
         idleIndex = (idleIndex + 1) % idleFrames.length;
-        idleFrameCounter = 0; 
+        lastIdleFrameTime = now;
+    }
+    
+    let idleImage = idleFrames[idleIndex];
+    if (idleImage && idleImage.complete) {
+        ctx.drawImage(idleImage, 0, 0, canvas.width, canvas.height);
     }
 }
 
-// Push-Animation rendern
+/**
+ * Renders the push animation that starts when the game start button is pressed.
+ * The main character presses the button on behalf of the player.
+ */
 function renderPushAnimation() {
     let pushImage = pushFrames[pushIndex];
     if (pushImage) { // Nur wenn das Bild vollständig geladen ist
@@ -51,60 +62,21 @@ function renderPushAnimation() {
     }
 }
 
-// Start-Animation rendern (abhängig von Mausposition)
+/**
+ * Renders an animation based on the mouse position in the canvas.
+ * The animation consists of 100 frames, where 0 represents the edge of the canvas,
+ * and 100 represents the center of the canvas.
+ */
 function renderStartAnimation() {
-    // Mitte des Bildschirms berechnen
     let centerX = canvas.width / 2;
     let centerY = canvas.height / 2;
 
-    // Entfernung der Maus zur Mitte des Bildschirms berechnen
     let distance = Math.sqrt((mouseX - centerX) ** 2 + (mouseY - centerY) ** 2);
-
-    // Maximale Entfernung für die Animation
     let maxDistance = Math.sqrt((canvas.width / 2) ** 2 + (canvas.height / 2) ** 2);
-
-    // Fortschritt der Animation (zwischen 0 und 1)
     let progress = Math.max(0, Math.min(1, 1 - distance / maxDistance));
-
-    // Bestimme das aktuelle Frame der Animation
     let currentFrame = Math.floor(progress * (startFrames.length - 1));
-
-    // Aktuelles Frame rendern
     let startImage = startFrames[currentFrame];
     if (startImage && startImage.complete) {
         ctx.drawImage(startImage, 0, 0, canvas.width, canvas.height);
     }
 }
-
-// function renderFullscreenAnimation() {
-//     // Berechne die Mitte des Fullscreen-Buttons
-//     let buttonCenterX = fullscreenButton.x + fullscreenButton.width / 2;
-//     let buttonCenterY = fullscreenButton.y + fullscreenButton.height / 2;
-
-//     // Entfernung der Maus zur Mitte des Fullscreen-Buttons berechnen
-//     let distance = Math.sqrt(
-//         (mouseX - buttonCenterX) ** 2 + (mouseY - buttonCenterY) ** 2
-//     );
-
-//     // Maximale Entfernung, die eine Animation triggert
-//     let maxFullscreenDistance = Math.max(fullscreenButton.width, fullscreenButton.height) * 3;
-
-//     // Fortschritt der Animation (zwischen 0 und 1, basierend auf Entfernung)
-//     let progress = Math.max(0, Math.min(1, 1 - distance / maxFullscreenDistance));
-
-//     // Bestimme das aktuelle Frame der Animation
-//     let currentFrame = Math.floor(progress * (startFrames.length - 1));
-
-//     // Render das aktuelle Frame der Animation
-//     let fullscreenImage = startFrames[currentFrame];
-//     if (fullscreenImage && fullscreenImage.complete) {
-//         ctx.drawImage(
-//             fullscreenImage,
-//             fullscreenButton.x, // Gleiche Position wie der Fullscreen-Button
-//             fullscreenButton.y,
-//             fullscreenButton.width,
-//             fullscreenButton.height
-//         );
-//     }
-// }
-

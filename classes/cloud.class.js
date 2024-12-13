@@ -11,6 +11,11 @@ class Cloud extends Entity {
         "img/clouds/cloud5.png"
     ]
 
+    /**
+     * Creates an instance of the Cloud.
+     * The cloud is positioned at a specified x-coordinate and has random dimensions and speed.
+     * @param {number} x - The x-coordinate where the cloud will be placed.
+     */
     constructor(x) {
         super().loadImage(this.getRandomImage());
         this.x = x;
@@ -22,10 +27,18 @@ class Cloud extends Entity {
         this.animate();
     }
 
+    /**
+     * Initiates the movement of the cloud to the left.
+     * The cloud moves at the specified speed, with updates occurring every frame.
+     */
     animate() {
         setInterval(() => this.moveLeft(), 1000 / 60);
     }
 
+    /**
+     * Returns a random image from the list of cloud images.
+     * @returns {string} - The path of a randomly selected cloud image.
+     */
     getRandomImage() {
         return this.IMAGES[Math.floor(Math.random() *5)]
     }

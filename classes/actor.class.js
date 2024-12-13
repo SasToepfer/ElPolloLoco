@@ -8,11 +8,14 @@ class Actor {
     imageCache = {};
     collisionBox = { xOffset: 10, yOffset: 10, width: 10, height: 10 }
 
+    /**
+     * Updates dimensions for scaling based on fullscreen settings.
+     * Scales the width, height, and position of the actor according to the current scale factors.
+     */
     updateDimensions() {
         this.width = this.baseWidth * scaleX;
         this.height = this.baseHeight * scaleY;
         this.y = this.baseY * scaleY;
-
         this.collisionBox = {
             xOffset: (this.baseCollisionBox?.xOffset || 0) * scaleX,
             yOffset: (this.baseCollisionBox?.yOffset || 0) * scaleY,
@@ -21,16 +24,28 @@ class Actor {
         };
     }
 
+    /**
+     * Loads a single image from the specified path to render.
+     * @param {string} path - The path of the image to load.
+     */
     loadImage(path) {
         this.img = new Image();
         this.img.src = path;
     }
 
+    /**
+     * Draws the actor onto the specified canvas context.
+     * @param {CanvasRenderingContext2D} ctx - The canvas rendering context to draw on.
+     */
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        // this.drawRect(ctx);
+        this.drawRect(ctx);
     }
 
+    /**
+     * Gets the corner points of the collision box.
+     * @returns {{x: number, y: number, width: number, height: number}} - The position and dimensions of the collision box.
+     */
     getCollisionBox() {
         return {
             x: this.x + (this.collisionBox?.xOffset || 0),
@@ -40,6 +55,10 @@ class Actor {
         }
     }
 
+    /**
+     * Gets the corner points of the deflection box.
+     * @returns {{x: number, y: number, width: number, height: number}} - The position and dimensions of the deflection box.
+     */
     getRelectionBox() {
         return {
             x: this.x + (this.deflectBox.xOffset || 0),
@@ -49,6 +68,10 @@ class Actor {
         }
     }
 
+    /**
+     * Draws the collision rectangle for debugging purposes.
+     * @param {CanvasRenderingContext2D} ctx - The canvas rendering context to draw on.
+     */
     drawRect(ctx) {
         let box = this.getCollisionBox();
         let color = "blue";
@@ -73,6 +96,10 @@ class Actor {
         color = "yellow";
     }
 
+    /**
+     * Loads images from an array of image paths into the image cache.
+     * @param {Array<string>} arr - An array containing paths of images to load.
+     */
     loadImages(arr) {
         arr.forEach(path => {
             let img = new Image();
@@ -80,6 +107,4 @@ class Actor {
             this.imageCache[path] = img;
         });
     }
-
-    
 }

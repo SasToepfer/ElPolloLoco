@@ -30,10 +30,20 @@
     <script src="scripts/game.js" defer></script>
 </head>
 <body onload="init()">
-    <h1>Jump and Run</h1>
+        <h1>Jump and Run</h1>
 
-    <canvas id="canvas" width="720px" height="480px">
-        
-    </canvas>
+        <canvas id="canvas" width="720px" height="480px"></canvas>
+        <div class="mobile-buttons">
+            <div class="button-wrapper">
+                <button id="btnLeft" class="base-button move-button"></button>
+                <button id="btnDown" class="base-button move-button rotate-90"></button>
+                <button id="btnRight" class="base-button move-button rotate-180"></button>
+            </div>
+            <div class="button-wrapper">
+                <button id="btnJump" class="base-button"></button>
+                <button id="btnFireball" class="base-button"></button>
+                <button id="btnDeflect" class="base-button"></button>
+            </div>
+        </div>
 </body>
 </html>
