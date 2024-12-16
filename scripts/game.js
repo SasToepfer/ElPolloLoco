@@ -12,6 +12,9 @@ let startBackground = new Image();
 startBackground.src = "img/startscreen/StartBG.jpg";
 let startButton = { x: canvas.width / 2 - canvas.width / 4.5 / 2, y: canvas.height / 2 - canvas.height / 12 / 2, width: canvas.width / 4.5, height: canvas.height / 8, text: "Start Game" };
 
+let winBackground = new Image();
+winBackground.src = "img/background/winBackground.jpg";
+
 let fullscreenIcon = new Image();
 fullscreenIcon.src = "img/ui/Fullscreen.png";
 let fullscreenButton = { x: canvas.width - 50, y: canvas.height - 50, width: 40, height: 40 };
@@ -23,6 +26,7 @@ function init() {
     createImageArray(idleFrames, "img/startscreen/StartIdle/StartIdle", 80);
     createImageArray(pushFrames, "img/startscreen/StartPush/Pushbutton", 21);
     createImageArray(startFrames, "img/startscreen/Startaction/StartAction", 101);
+    createImageArray(winFrames, "img/startscreen/Won/gameWon", 40);
     requestAnimationFrame(render);
 }
 
@@ -30,12 +34,20 @@ function init() {
  * Main render loop that updates the screen.
  */
 function render() {
-    const rect = canvas.getBoundingClientRect();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gameState == "won" ? showGameWonScreen() : showTitleScreen();
+    if (gameState !== "game") {
+        requestAnimationFrame(render);
+    }
+}
+
+/** Renders Title screen */
+function showTitleScreen() {
+    const rect = canvas.getBoundingClientRect();
     ctx.drawImage(startBackground, 0, 0, canvas.width, canvas.height);
     if (gameState === "startscreen") {
         if (!mouseInsideCanvas) {
-            renderIdleAnimation();
+            renderLoopAnimation("idle");
         } else {
             renderStartAnimation();
         }
@@ -44,9 +56,20 @@ function render() {
     }
     renderStartButton();
     rect.height >= 480 ? renderFullscreenButton() : renderMobileButtons();
-    if (gameState !== "game") {
-        requestAnimationFrame(render);
-    }
+}
+
+/** Render Game Won Screen */
+function showGameWonScreen() {
+    ctx.drawImage(winBackground, 0, 0, canvas.width, canvas.height);
+    FrameDelay = 30;
+    renderLoopAnimation("won");
+    ctx.fillStyle = "white"; 
+    ctx.font = "bold 48px Arial"; 
+    ctx.textAlign = "center"; 
+    ctx.textBaseline = "middle"; 
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    ctx.fillText("Game Won", centerX, centerY);
 }
 
 /**

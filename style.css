@@ -53,10 +53,16 @@ canvas {
     rotate: 180deg;
 }
 
+.screen-warning {
+    display: none;
+}
 
 @media only screen and (max-width: 720px) {
     canvas {
         width: 100%;
+    }
+    .screen-warning {
+        display: block;
     }
 }
 
@@ -74,5 +80,8 @@ canvas {
         position: fixed;
         top: 85vh;
         width: 95%;
+    }
+    .screen-warning {
+        display: none !important;
     }
 }

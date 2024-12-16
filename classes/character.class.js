@@ -62,11 +62,16 @@ class Character extends Entity {
      */
     animate() {
         this.movement();
-        let animInterwal = setInterval(() => {
+        this.animInterval = setInterval(() => {
             if (this.blockAnimation) {
-                return
+                return;
             } else if (this.world.checkSpells("deflect") && this.world.keyboard.Q) {
-                this.playAnimationWithArgs(this.IMAGES_DEFLECT, 45, true, () => { this.fixedMovement = false, this.blockAnimation = false }, () => {this.world.checkDeflect(), this.audioManager.playAudio("charDeflect")}, 8);
+                this.playAnimationWithArgs(this.IMAGES_DEFLECT, 45, true, () => { this.fixedMovement = false, this.blockAnimation = false }, () => {
+                    this.isInvincible = true;
+                    setTimeout(() => {
+                        this.world.checkDeflect(), this.audioManager.playAudio("charDeflect")}, 100);
+                    setTimeout(() => {
+                        this.isInvincible = false}, 150)}, 4);
             } else if (this.world.checkSpells("fireball") && this.world.keyboard.E) {
                 this.playAnimationWithArgs(this.IMAGES_CASTFIREBALL, 40, true, () => { this.fixedMovement = false, this.blockAnimation = false }, () => { this.world.castFireball(), this.audioManager.playAudio("charFireball") }, 12);
             } else if (this.isAboveGround()) {
@@ -76,7 +81,6 @@ class Character extends Entity {
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
             }
-            if (this.world.isGameOver) {clearInterval(animInterwal)}
         }, 1000 / 30);
     }
 
@@ -94,7 +98,9 @@ class Character extends Entity {
             } else {
                 this.health = 0;
                 this.blockAnimation = false;
-                this.playAnimationWithArgs(this.IMAGES_DEAD, this.IMAGES_DEAD.length, true, () => { this.world.gameOver() });
+                clearInterval(this.animInterval);
+                clearInterval(this.moveInterval);
+                this.playAnimationWithArgs(this.IMAGES_DEAD, this.IMAGES_DEAD.length, true, () => { this.world.gameOver("startscreen") });
             }
             this.hurtTimeout = setTimeout(() => {
                 this.isInvincible = false;
@@ -106,6 +112,9 @@ class Character extends Entity {
      * Plays the jump animation based on the character's jump height.
      */
     playJumpAnimation() {
+        if (this.isDead()) {
+            return;
+        }
         let frame;
         let arr = this.IMAGES_JUMPING;
         const jumpHeight = 260 - this.y;
@@ -146,7 +155,7 @@ class Character extends Entity {
      * Handles the character's movement based on keyboard input.
      */
     movement() {
-        let movementInterwal = setInterval(() => {
+        this.moveInterval = setInterval(() => {
             if (this.isMovingAllowed()) {
                 /** Move Right */
                 if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
@@ -166,9 +175,6 @@ class Character extends Entity {
                     this.audioManager.playAudio("charJump");
                 }
                 this.world.camera_x = -this.x + 100;
-            }
-            if (this.world.isGameOver) {
-                clearInterval(movementInterwal);
             }
         }, 1000 / 40)
     }

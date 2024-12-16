@@ -3,6 +3,7 @@ class Actor {
     y = 350;
     height = 100;
     width = 50;
+    otherDirection = false;
     img;
     currentImage = 0;
     imageCache = {};
@@ -39,7 +40,7 @@ class Actor {
      */
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        this.drawRect(ctx);
+        // this.drawRect(ctx);
     }
 
     /**

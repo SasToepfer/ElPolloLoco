@@ -5,8 +5,9 @@ class Manarune extends Entity {
     baseHeight = 50;
     baseCollisionBox = { xOffset: 20, yOffset: 0, width: 80, height: 50 }
     
-    constructor() {
+    constructor(x) {
         super().loadImage("img/effects/rune.png");
+        this.x = x;
         this.updateDimensions();
     }
 }

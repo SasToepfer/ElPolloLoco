@@ -11,8 +11,10 @@ class World {
     ];
     backgroundImages = [];
     camera_x = 0;
-    hpFrame = new Statusbar(true, 20, 0, 300, 60);
-    hpBar = new Statusbar(false, 80, 20, 180, 20);
+    hpFrame = new Statusbar(true, 20 , 0, 300 , 60);
+    hpBar = new Statusbar(false, 80, 20, 180 , 20);
+    endbossHpBar = null;
+    endbossHpFrame = null;
     userInterface = new UserInterface(this, "keyboardDisplay", "img/ui/keyboard.png", 20, 50, 50, 40)
     muteButton = new UserInterface(this, "toggleSound", "img/ui/sound_on.png", 30 + this.hpFrame.width, 15, 30, 30)
     flame = new Manaflame(this.character);
@@ -81,7 +83,16 @@ class World {
         this.spawnManager.startSpawning();
         setInterval(() => {
             this.spawnManager.removeOffscreen();
+            if (this.character.x > 6000) {
+                this.spawnManager.spawnEndboss();
+            };
         }, 200);
+    }
+
+    /** Initialize the Endboss HP Bar */
+    initEndboss() {
+        this.endbossHpFrame = new Statusbar(true, this.canvas.width - 280, 0, 300, 60);
+        this.endbossHpBar = new Statusbar(false, this.canvas.width - 220, 20, 180 , 20);
     }
 
     /** Delegate checks for dead enemies to the spawn manager. */
@@ -203,6 +214,10 @@ class World {
     addCameraFixed() {
         this.addToMap(this.hpBar);
         this.addToMap(this.hpFrame);
+        if (this.endbossHpBar) {
+            this.addToMap(this.endbossHpBar);
+            this.addToMap(this.endbossHpFrame);
+        }
         this.addToMap(this.userInterface);
         this.addToMap(this.muteButton);
         this.userInterface.showKeyboardDisplay(this.ctx);
@@ -235,7 +250,7 @@ class World {
     }
 
     /** Handle game over state when character's health reaches zero. */
-    gameOver() {
+    gameOver(destination) {
         this.isGameOver = true;
         this.muteAllSounds(true);
         this.flame.percentage = 0;
@@ -244,9 +259,9 @@ class World {
         this.enemySpells = [];
         setTimeout(() => {
             this.character.x = 120;
-            gameState = "startscreen";
+            gameState = destination;
+            loopAnimFrameIndex = 0;
             requestAnimationFrame(render);
-            idleIndex = 0;
             deleteWorld();
         }, 3000);
     }

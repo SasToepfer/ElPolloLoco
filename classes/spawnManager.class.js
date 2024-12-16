@@ -10,19 +10,24 @@ class SpawnManager {
     startSpawning() {
         this.spawnManarune();
         this.spawnClouds();
-        // this.spawnBlobEnemy();
-        // this.spawnMageEnemy();
-        this.spawnEndboss();
+        this.spawnBlobEnemy();
+        this.spawnMageEnemy();
     }
 
     /** Spawn mana regain Runes on floor */
     spawnManarune() {
-        this.world.level.runes.push(new Manarune());
+        this.world.level.runes.push(new Manarune(200));
+        this.world.level.runes.push(new Manarune(5500));
+        this.world.level.runes.push(new Manarune(2700));
     }
 
     /** Spawns Endboss */
     spawnEndboss() {
-        this.world.level.enemies.push(new Endboss(this.world));
+        if (!this.isEndbossSpawned) {
+            this.isEndbossSpawned = true;
+            this.world.level.enemies.push(new Endboss(this.world));
+            this.world.initEndboss();
+        }
     }
 
     /** Spawn Clouds until GameOver is triggered */
@@ -38,21 +43,21 @@ class SpawnManager {
     /** Spawn Pink Blobs until GameOver is triggered or Endboss is Spawned*/
     spawnBlobEnemy() {
         setTimeout(() => {
-            if (!this.world.isGameOver || !this.isEndbossSpawned) {
+            if (!this.world.isGameOver && !this.isEndbossSpawned) {
                 this.world.level.enemies.push(new Blob(this.world));
                 this.spawnBlobEnemy();
             }
-        }, 5000 + Math.random() * 4000);
+        }, 3000 + Math.random() * 4000);
     }
 
     /** Spawn Zombie Mage until GameOver is triggered or Endboss is Spawned*/
     spawnMageEnemy() {
         setTimeout(() => {
-            if (!this.world.isGameOver || !this.isEndbossSpawned) {
+            if (!this.world.isGameOver && !this.isEndbossSpawned) {
                 this.world.level.enemies.push(new Mage(this.world));
                 this.spawnMageEnemy();
             }
-        }, 15000 + Math.random() * 10000);
+        }, 6000 + Math.random() * 10000);
     }
 
     /** Checks if any Enemy has 0 Hp and removes them from Array enemies in world */

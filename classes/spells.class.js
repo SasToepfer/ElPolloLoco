@@ -1,5 +1,5 @@
 class Spell extends Entity {
-    damage = 20;
+    damage = 10;
     baseY;
     baseHeight;
     baseWidth;
@@ -24,6 +24,7 @@ class Spell extends Entity {
         this.baseWidth = width;
         this.baseHeight = height;
         this.baseY = y;
+        this.damage = isChar ? 20 : 10;
         if (isEndboss) {
             endbossAttack1 ? this.castEndbossFireball() : this.castEndbossFireRain();
         } else {

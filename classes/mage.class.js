@@ -3,7 +3,7 @@ class Mage extends Entity {
     baseHeight = 250;
     baseY = 220;
     damage = 50;
-    health = 20;
+    health = 10;
     baseCollisionBox = { xOffset: 60, yOffset: 50, width: 20, height: 180 }
     animState = "idle";
     IMAGES_IDLE = [];
@@ -40,7 +40,7 @@ class Mage extends Entity {
      */
     animate() {
         this.movement();
-        let animInterwal = setInterval(() => {
+        this.animInterval = setInterval(() => {
             if (this.isDead()) 
                 {
                     clearInterval();
@@ -55,7 +55,6 @@ class Mage extends Entity {
             } else {
                 this.playAnimation(this.IMAGES_IDLE);
             }
-            if (this.world.isGameOver) {clearInterval(animInterwal)}
         }, 1000 / 30);
     }
 
@@ -67,6 +66,8 @@ class Mage extends Entity {
         if (this.health - damage > 0) {
             this.health -= damage;
         } else {
+            clearInterval(this.animInterval);
+            clearInterval(this.moveInterval);
             this.health = 0;
         }
         this.blockAnimation = false;
@@ -98,13 +99,12 @@ class Mage extends Entity {
      * Handles the movement of the Mage.
      */
     movement() {
-        let movementInterwal = setInterval(() => {
+        this.moveInterval = setInterval(() => {
             if (this.animState != "walk" || this.fixedMovement) {
                 return;
             }else {
                 this.moveLeft();
             }
-            if (this.world.isGameOver) {clearInterval(movementInterwal);}
          }, 1000 / 100);
          
     }

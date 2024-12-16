@@ -3,12 +3,13 @@ let mouseX = 0, mouseY = 0;
 let buttonCenter = { x: 360, y: 240 }; 
 let maxDistance = Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2; 
 let idleFrames = [];
+let winFrames = [];
 let startFrames = [];
 let pushFrames = [];
-let idleIndex = 0;
+let loopAnimFrameIndex = 0;
 let pushIndex = 0;
-let lastIdleFrameTime = 0;
-let idleFrameDelay = 60;
+let lastFrameTime = 0;
+let FrameDelay = 60;
 let pushFrameCounter = 0; 
 
 /**
@@ -34,16 +35,24 @@ function createImageArray(arr, path, length) {
 /**
  * Renders the idle animation when the mouse is not in the canvas.
  */
-function renderIdleAnimation() {
+function renderLoopAnimation(animName) {
     const now = Date.now();
-    if (now - lastIdleFrameTime >= idleFrameDelay) {
-        idleIndex = (idleIndex + 1) % idleFrames.length;
-        lastIdleFrameTime = now;
+    arrayFrames = getAnimToPlay(animName);
+    if (now - lastFrameTime >= FrameDelay) {
+        loopAnimFrameIndex = (loopAnimFrameIndex + 1) % arrayFrames.length;
+        lastFrameTime = now;
     }
     
-    let idleImage = idleFrames[idleIndex];
-    if (idleImage && idleImage.complete) {
-        ctx.drawImage(idleImage, 0, 0, canvas.width, canvas.height);
+    let frameImage = arrayFrames[loopAnimFrameIndex];
+    if (frameImage && frameImage.complete) {
+        ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+    }
+}
+
+function getAnimToPlay(name) {
+    switch (name) {
+        case "idle": return idleFrames;
+        case "won": return winFrames;
     }
 }
 

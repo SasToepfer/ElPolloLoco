@@ -4,15 +4,18 @@
  */
 class Entity extends Actor {
     speed = 0;
-    otherDirection = false;
     speedY = 0;
     acceleration = 2;
     health = 100;
     lastHit = 0;
     fixedMovement = false;
     blockAnimation = false;
+    animInterval = "";
+    moveInterval = "";
+    currentAnimationInterval;
     world;
     audioManager = new SoundManager();
+    
 
     /**
      * Creates an array of image paths for animations based on the specified parameters.
@@ -115,17 +118,21 @@ class Entity extends Actor {
         if (this.blockAnimation) { return }
         this.blockAnimation = true;
         this.fixedMovement = isMovementBlocked;
+        if (this.currentAnimationInterval) {
+            clearInterval(this.currentAnimationInterval);
+        }
         let currentFrame = 0;
         const animationFrames = arr;
         const frameInterval = 1000 / animationSpeed;
-        const animationInterval = setInterval(() => {
+        this.currentAnimationInterval = setInterval(() => {
             this.img = this.imageCache[animationFrames[currentFrame]];
             if (frameCallback && currentFrame == frameCallbackFrame) {
                 frameCallback();
             }
             currentFrame++;
             if (currentFrame >= animationFrames.length) {
-                clearInterval(animationInterval);
+                clearInterval(this.currentAnimationInterval);
+                this.currentAnimationInterval = null;
                 if (typeof endFunction === 'function') {
                     endFunction(...args);
                 }
@@ -143,7 +150,6 @@ class Entity extends Actor {
         let thisBox;
         thisBox = isDeflect ? this.getRelectionBox() : this.getCollisionBox();
         let entBox = ent.getCollisionBox();
-
         return (
             thisBox.x < entBox.x + entBox.width &&
             thisBox.x + thisBox.width > entBox.x &&

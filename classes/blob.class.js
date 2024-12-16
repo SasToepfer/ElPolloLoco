@@ -2,7 +2,7 @@ class Blob extends Entity {
     baseWidth = 100;
     baseHeight = 100;
     baseY = 360;
-    damage = 40;
+    damage = 20;
     health = 20;
     baseCollisionBox = { xOffset: 30, yOffset: 50, width: 40, height: 40 }
     animState = "idle";
@@ -37,15 +37,15 @@ class Blob extends Entity {
      */
     animate() {
         this.movement();
-        animinterwal = setInterval(() => {
+        this.animInterval = setInterval(() => {
             if (this.blockAnimation || this.isDead()) {
                 return
             } else if (this.animState == "walk") {
-                this.playAnimationWithArgs(this.IMAGES_WALKING, 30, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => {(setTimeout(() => {this.audioManager.playAudio("slimeWalk"), this.speed = 0}, 800)) ,this.speed = 0.5}, 10);
+                this.playAnimationWithArgs(this.IMAGES_WALKING, 30, false, () => { this.fixedMovement = false, this.blockAnimation = false, this.nextAction() }, () => { (setTimeout(() => { this.audioManager.playAudio("slimeWalk"), this.speed = 0 }, 800)), this.speed = 0.5 }, 10);
             } else {
-                this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => {this.fixedMovement = false, this.blockAnimation = false, this.nextAction()}, () => this.speed = 6, 16);
+                this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => { this.fixedMovement = false, this.blockAnimation = false, this.nextAction() }, () => this.speed = 6, 16);
             }
-            if (this.world.isGameOver) {clearInterval(animInterwal)}
+            if (this.world.isGameOver) { clearInterval(animinterval) }
         }, 1000 / 30);
     }
 
@@ -58,6 +58,8 @@ class Blob extends Entity {
             this.health -= damage;
         } else {
             this.health = 0;
+            clearInterval(this.animInterval);
+            clearInterval(this.moveInterval);
         }
         this.blockAnimation = false;
         this.playAnimationWithArgs(this.IMAGES_HURT, 70, true, () => this.world.checkEnemyDead(), () => this.audioManager.playAudio("slimeDead"), 1);
@@ -67,8 +69,8 @@ class Blob extends Entity {
      * Determines the next action of the Blob based on its position relative to the character.
      */
     nextAction() {
-        if (this.isDead()) {return}
-        if (this.x - this.world.character.x <= 400 * scaleX) {
+        if (this.isDead()) { return }
+        if (this.x - this.world.character.x <= (400 + Math.random() * 300 - Math.random() * 100) * scaleX) {
             this.speed = 0;
             this.animState = "attack"
         } else {
@@ -81,9 +83,9 @@ class Blob extends Entity {
      * Handles the movement of the Blob when it is not fixed in place.
      */
     movement() {
-        let movementInterwal = setInterval(() => {
-            if (!this.fixedMovement) {this.moveLeft();}
-         }, 1000 / 100);
-         if (this.world.isGameOver) {clearInterval(movementInterwal);}
+        this.moveInterval = setInterval(() => {
+            if (!this.fixedMovement) { this.moveLeft(); }
+        }, 1000 / 100);
+        if (this.world.isGameOver) { clearInterval(movementInterwal); }
     }
 }

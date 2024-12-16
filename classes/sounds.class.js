@@ -24,7 +24,7 @@ class SoundManager {
         this.mixSound(this.charJump, 0.7, 2);
         this.mixSound(this.charFireball, 0.7, 2);
         this.mixSound(this.charDeflect, 0.7, 2);
-        this.mixSound(this.charWalk, 0.5, 1.5);
+        this.mixSound(this.charWalk, 0.2, 1.2);
         this.mixSound(this.slimeWalk, 0.3, 2);
         this.mixSound(this.slimeDead, 0.3, 2);
         this.mixSound(this.mageCast, 0.3, 2);
