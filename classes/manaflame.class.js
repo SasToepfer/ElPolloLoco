@@ -6,12 +6,12 @@ class Manaflame extends Entity {
     baseWidth = 30;
     baseHeight = 50;
     IMAGES = [
-        "img/effects/flamme-0.png",
-        "img/effects/flamme-1.png",
-        "img/effects/flamme-2.png",
-        "img/effects/flamme-3.png",
-        "img/effects/flamme-4.png",
-        "img/effects/flamme-5.png",
+        "img/effects/flamme0.png",
+        "img/effects/flamme1.png",
+        "img/effects/flamme2.png",
+        "img/effects/flamme3.png",
+        "img/effects/flamme4.png",
+        "img/effects/flamme5.png",
     ]
 
     /**
@@ -19,7 +19,7 @@ class Manaflame extends Entity {
      * @param {Character} characterRef - The reference to the character associated with the mana flame.
      */
     constructor(characterRef) {
-        super().loadImage("img/effects/flamme.gif");
+        super().loadImage("img/effects/flamme0.png");
         this.loadImages(this.IMAGES);
         this.charRef = characterRef;
         this.updatePos();

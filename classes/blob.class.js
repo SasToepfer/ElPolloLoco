@@ -45,7 +45,6 @@ class Blob extends Entity {
             } else {
                 this.playAnimationWithArgs(this.IMAGES_ATTACK, 50, false, () => { this.fixedMovement = false, this.blockAnimation = false, this.nextAction() }, () => this.speed = 6, 16);
             }
-            if (this.world.isGameOver) { clearInterval(animinterval) }
         }, 1000 / 30);
     }
 
@@ -86,6 +85,5 @@ class Blob extends Entity {
         this.moveInterval = setInterval(() => {
             if (!this.fixedMovement) { this.moveLeft(); }
         }, 1000 / 100);
-        if (this.world.isGameOver) { clearInterval(movementInterwal); }
     }
 }
