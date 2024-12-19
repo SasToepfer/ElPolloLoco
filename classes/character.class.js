@@ -62,12 +62,7 @@ class Character extends Entity {
             if (this.blockAnimation) {
                 return;
             } else if (this.world.checkSpells("deflect") && this.world.keyboard.Q) {
-                this.playAnimationWithArgs(this.IMAGES_DEFLECT, 45, true, () => { this.fixedMovement = false, this.blockAnimation = false }, () => {
-                    this.isInvincible = true;
-                    setTimeout(() => {
-                        this.world.checkDeflect(), this.audioManager.playAudio("charDeflect")}, 100);
-                    setTimeout(() => {
-                        this.isInvincible = false}, 150)}, 4);
+                this.deflectAnim();
             } else if (this.world.checkSpells("fireball") && this.world.keyboard.E) {
                 this.playAnimationWithArgs(this.IMAGES_CASTFIREBALL, 40, true, () => { this.fixedMovement = false, this.blockAnimation = false }, () => { this.world.castFireball(), this.audioManager.playAudio("charFireball") }, 12);
             } else if (this.isAboveGround()) {
@@ -78,6 +73,14 @@ class Character extends Entity {
                 this.playAnimation(this.IMAGES_IDLE);
             }
         }, 1000 / 30);
+    }
+
+    deflectAnim() {
+        this.playAnimationWithArgs(this.IMAGES_DEFLECT, 45, true, () => { this.fixedMovement = false, this.blockAnimation = false }, () => {
+            this.isInvincible = true;
+            setTimeout(() => { this.world.checkDeflect(), this.audioManager.playAudio("charDeflect") }, 100);
+            setTimeout(() => { this.isInvincible = false }, 150)
+        }, 4);
     }
 
     /**
@@ -92,11 +95,7 @@ class Character extends Entity {
                 this.health -= damage;
                 this.playAnimationWithArgs(this.IMAGES_HURT, this.IMAGES_HURT.length, false, () => { this.blockAnimation = false });
             } else {
-                this.health = 0;
-                this.blockAnimation = false;
-                clearInterval(this.animInterval);
-                clearInterval(this.moveInterval);
-                this.playAnimationWithArgs(this.IMAGES_DEAD, this.IMAGES_DEAD.length, true, () => { this.world.gameOver("lose") });
+                this.healthZero();
             }
             this.hurtTimeout = setTimeout(() => {
                 this.isInvincible = false;
@@ -104,32 +103,62 @@ class Character extends Entity {
         }
     }
 
+    healthZero() {
+        this.health = 0;
+        this.blockAnimation = false;
+        clearInterval(this.animInterval);
+        clearInterval(this.moveInterval);
+        this.playAnimationWithArgs(this.IMAGES_DEAD, this.IMAGES_DEAD.length, true, () => { this.world.gameOver("lose") });
+    }
+
     /**
      * Plays the jump animation based on the character's jump height.
      */
     playJumpAnimation() {
-        if (this.isDead()) {
-            return;
-        }
+        if (this.isDead()) { return; }
         let frame;
         let arr = this.IMAGES_JUMPING;
         const jumpHeight = 260 - this.y;
         const maxJumpHeight = 170;
         const jumpProgress = Math.min(1, Math.max(0, jumpHeight / maxJumpHeight));
-        if (jumpProgress < 0.2) {
-            frame = Math.floor(jumpProgress * 15);
-        } else if (jumpProgress < 0.8) {
-            const flightFramesStart = 3;
-            const flightFramesCount = 16 - flightFramesStart + 1;
-            const flightProgress = (jumpProgress - 0.2) / 0.6;
-            frame = flightFramesStart + Math.floor(flightProgress * flightFramesCount);
-        } else {
-            const landingFramesStart = 17;
-            const landingProgress = (jumpProgress - 0.8) / 0.2;
-            frame = landingFramesStart + Math.floor(landingProgress * (arr.length - landingFramesStart));
-        }
+        frame = this.jumpLogic(jumpProgress, arr)
         frame = Math.min(frame, arr.length - 1);
         this.img = this.imageCache[arr[frame]];
+    }
+
+    /** statements based on jumping progess */
+    jumpLogic(jumpProgress, arr) {
+        if (jumpProgress < 0.2) {
+            return Math.floor(jumpProgress * 15);
+        } else if (jumpProgress < 0.8) {
+            return this.midJump(jumpProgress);
+        } else {
+            return this.endJump(jumpProgress, arr);
+        }
+    }
+
+    /**
+     * middle of jump animation
+     * @param {integer} jumpProgress current progress on jump
+     * @returns current frame in jump animation
+     */
+    midJump(jumpProgress) {
+        const flightFramesStart = 3;
+        const flightFramesCount = 16 - flightFramesStart + 1;
+        const flightProgress = (jumpProgress - 0.2) / 0.6;
+        return flightFramesStart + Math.floor(flightProgress * flightFramesCount);
+    }
+
+    /**
+     * ending of jump animation
+     * @param {*} jumpProgress current progress on jump
+     * @param {*} arr array to register end of animation
+     * @returns current frame in jump animation
+     */
+    endJump(jumpProgress, arr) {
+        const landingFramesStart = 17;
+        const landingProgress = (jumpProgress - 0.8) / 0.2;
+        return landingFramesStart + Math.floor(landingProgress * (arr.length - landingFramesStart));
     }
 
     /**
@@ -153,19 +182,8 @@ class Character extends Entity {
     movement() {
         this.moveInterval = setInterval(() => {
             if (this.isMovingAllowed()) {
-                /** Move Right */
-                if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                    this.moveRight();
-                    this.otherDirection = false;
-                    this.audioManager.playAudio("charWalk");
-                }
-                /** Move Left */
-                if (this.world.keyboard.LEFT && this.x >= 0) {
-                    this.moveLeft();
-                    this.otherDirection = true;
-                    this.audioManager.playAudio("charWalk");
-                }
-                /** Jump */
+                if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) { this.rightMovement(); }
+                if (this.world.keyboard.LEFT && this.x >= 0) { this.leftMovement() }
                 if ((this.world.keyboard.SPACE || this.world.keyboard.UP) && !this.isAboveGround()) {
                     this.jump();
                     this.audioManager.playAudio("charJump");
@@ -173,6 +191,20 @@ class Character extends Entity {
                 this.world.camera_x = -this.x + 100;
             }
         }, 1000 / 40)
+    }
+
+    /** Move Left */
+    leftMovement() {
+        this.moveLeft();
+        this.otherDirection = true;
+        this.audioManager.playAudio("charWalk");
+    }
+
+    /** Move Right */
+    rightMovement() {
+        this.moveRight();
+        this.otherDirection = false;
+        this.audioManager.playAudio("charWalk");
     }
 }
 

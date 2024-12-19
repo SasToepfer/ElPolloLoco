@@ -33,9 +33,7 @@ class CollisionManager {
                 if (enemy instanceof Blob && this.character.isJumpingOn(enemy)) {
                     enemy.getHit(this.character.damage);
                     this.character.isInvincible = true;
-                    setTimeout(() => {
-                        this.character.isInvincible = false;
-                    }, 400);
+                    setTimeout(() => {this.character.isInvincible = false;}, 400);
                 } else {
                     this.character.getHit(enemy.damage);
                     this.hpBar.setPercentage(this.character.health);

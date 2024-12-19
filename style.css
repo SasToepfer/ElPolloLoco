@@ -3,7 +3,7 @@
     font-family: 'Sour Gummy';
     font-style: normal;
     font-weight: 400;
-    src: url('../fonts/sour-gummy-v1-latin-regular.woff2') format('woff2');
+    src: url('fonts/sour-gummy-v1-latin-regular.woff2') format('woff2');
 }
 
 h1 {
