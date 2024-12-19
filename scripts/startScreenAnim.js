@@ -4,6 +4,7 @@ let buttonCenter = { x: 360, y: 240 };
 let maxDistance = Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2; 
 let idleFrames = [];
 let winFrames = [];
+let lostFrames = [];
 let startFrames = [];
 let pushFrames = [];
 let loopAnimFrameIndex = 0;
@@ -42,17 +43,22 @@ function renderLoopAnimation(animName) {
         loopAnimFrameIndex = (loopAnimFrameIndex + 1) % arrayFrames.length;
         lastFrameTime = now;
     }
-    
     let frameImage = arrayFrames[loopAnimFrameIndex];
     if (frameImage && frameImage.complete) {
         ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
     }
 }
 
+/**
+ * Returns the animation to play based on gamestate
+ * @param {string} name the Startscreen Animation to play
+ * @returns array with the animation
+ */
 function getAnimToPlay(name) {
     switch (name) {
         case "idle": return idleFrames;
         case "won": return winFrames;
+        case "lost": return lostFrames;
     }
 }
 
@@ -62,7 +68,7 @@ function getAnimToPlay(name) {
  */
 function renderPushAnimation() {
     let pushImage = pushFrames[pushIndex];
-    if (pushImage) { // Nur wenn das Bild vollständig geladen ist
+    if (pushImage) {
         ctx.drawImage(pushImage, 0, 0, canvas.width, canvas.height); 
     }
     pushFrameCounter++
@@ -79,7 +85,6 @@ function renderPushAnimation() {
 function renderStartAnimation() {
     let centerX = canvas.width / 2;
     let centerY = canvas.height / 2;
-
     let distance = Math.sqrt((mouseX - centerX) ** 2 + (mouseY - centerY) ** 2);
     let maxDistance = Math.sqrt((canvas.width / 2) ** 2 + (canvas.height / 2) ** 2);
     let progress = Math.max(0, Math.min(1, 1 - distance / maxDistance));

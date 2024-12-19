@@ -5,6 +5,8 @@ class UserInterface extends Actor {
     canvas;
     ctx;
     keyboardVisible = false;
+    tooltipAreas = [];
+    currentTooltip = "";
 
     /**
      * Creates an instance of the UserInterface.
@@ -30,7 +32,7 @@ class UserInterface extends Actor {
         this.listener = listener;
         this.updateDimensions();
         this.addListener()
-        
+
     }
 
     /**
@@ -39,15 +41,32 @@ class UserInterface extends Actor {
     addListener() {
         canvas.addEventListener("click", (event) => {
             const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (event.clientX - rect.left) * scaleX;
+            const mouseY = (event.clientY - rect.top) * scaleY;
+            if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
+                this.getFunctionToListen();
+            }
+        });
+        this.addTooltipListener();
+    }
+
+    /**
+     * Adds a mouse movement listener to the canvas to show Tootips.
+     */
+    addTooltipListener() {
+        canvas.addEventListener("mousemove", (event) => {
+            const rect = canvas.getBoundingClientRect();
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
-            if (
-                mouseX >= this.x &&
-                mouseX <= this.x + this.width &&
-                mouseY >= this.y &&
-                mouseY <= this.y + this.height
-            ) {
-                this.getFunctionToListen();
+            this.currentTooltip = "";
+            if (this.tooltipAreas) {
+                this.tooltipAreas.forEach(area => {
+                    if (mouseX >= area.x && mouseX <= area.x + area.width &&  mouseY >= area.y && mouseY <= area.y + area.height) {
+                        this.currentTooltip = area.tooltip;
+                    }
+                });
             }
         });
     }
@@ -59,7 +78,7 @@ class UserInterface extends Actor {
         switch (this.listener) {
             case "keyboardDisplay": return this.toggleKeyboardDisplay();
             case "toggleSound": return this.toggleSound();
-        
+
             default:
                 break;
         }
@@ -74,15 +93,11 @@ class UserInterface extends Actor {
         this.loadImage(this.imagePath);
     }
 
-    toggleMobileButtons() {
-
-    }
-
     /**
      * Toggles the display of the keyboard instructions.
      */
     toggleKeyboardDisplay() {
-        this.keyboardVisible = !this.keyboardVisible; // Status umschalten
+        this.keyboardVisible = !this.keyboardVisible;
     }
 
     /**
@@ -92,19 +107,40 @@ class UserInterface extends Actor {
     showKeyboardDisplay(ctx) {
         if (this.keyboardVisible) {
             const instructions = [
-                "a / d = Move",
-                "space = Jump",
-                "e = Fireball",
-                "q = Reflect",
-                "s = Collect Mana"
+                { text: "a / d = Move", tooltip: "Move left and right" },
+                { text: "space = Jump", tooltip: "Jump to avoid obstacles and enemies" },
+                { text: "e = Fireball", tooltip: "Shoot a fireball at enemies" },
+                { text: "q = Reflect", tooltip: "Deflect enemy spells with the right timing" },
+                { text: "s = Collect Mana", tooltip: "Fill the Flame in your Hand with blue glyphs on the ground" },
             ];
-            const startX = 20; // X-Position
-            const startY = 100 * scaleY; // Start Y-Position
-            const lineHeight = 20 * scaleY; // Abstand zwischen den Zeilen
-            const font = `${Math.round(16 * scaleY)}px Arial`; // Schriftgröße und -art
-            const color = "white"; // Textfarbe
-            this.drawTextLines(ctx, instructions, startX, startY, lineHeight, font, color);
+            ctx.font = `${Math.round(16 * scaleY)}px Sour Gummy`;
+            ctx.fillStyle = "white";
+            ctx.textAlign = "left";
+            this.tooltipAreas = [];
+            this.drawAndSafeTooltips(instructions);
         }
+    }
+
+    /**
+     * Text and Tooltips to render
+     * @param {Object} instructions Text and Tooltip array
+     */
+    drawAndSafeTooltips(instructions) {
+        const startX = 20;
+        const startY = 100 * scaleY;
+        const lineHeight = 20 * scaleY;
+        instructions.forEach((instruction, index) => {
+            const textWidth = ctx.measureText(instruction.text).width;
+            const posY = startY + index * lineHeight;
+            ctx.fillText(instruction.text, startX, posY);
+            this.tooltipAreas.push({
+                x: startX,
+                y: posY - lineHeight / 2,
+                width: textWidth,
+                height: lineHeight,
+                tooltip: instruction.tooltip
+            });
+        });
     }
 
     /**
@@ -125,6 +161,22 @@ class UserInterface extends Actor {
             ctx.fillText(line, x, y + index * lineHeight);
         });
     }
-    
-}
 
+    renderTooltip(ctx) {
+        if (this.currentTooltip && this.keyboardVisible) {
+            const tooltipX = mouseX + 15;
+            const tooltipY = mouseY - 30;
+            const padding = 5;
+            const fontSize = Math.round(14 * scaleY);
+            ctx.font = `${fontSize}px Arial`;
+            const textWidth = ctx.measureText(this.currentTooltip).width;
+            const boxWidth = textWidth + 2 * padding;
+            const boxHeight = fontSize + 2 * padding;
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(tooltipX, tooltipY, boxWidth, boxHeight);
+            ctx.fillStyle = "white";
+            ctx.fillText(this.currentTooltip, tooltipX + padding, tooltipY + boxHeight / 2 + fontSize / 4);
+        }
+    }
+
+}

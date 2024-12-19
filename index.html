@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JumpNiRun</title>
     <link rel="icon" type="image/x-icon" href="img/effects/flamme3.png">
+    <link rel="stylesheet" href="gamestyle.css">
     <link rel="stylesheet" href="style.css">
     <script src="classes/collisionManager.class.js"></script>
     <script src="classes/spawnManager.class.js"></script>
@@ -28,10 +30,39 @@
     <script src="scripts/startScreenAnim.js" defer></script>
     <script src="scripts/game.js" defer></script>
 </head>
-<body onload="init()">
-        <h1>Jump and Run</h1>
 
+<body onload="init()">
+    <header>
+        <headsection class="head-container content-distance">
+            <h1>Jump and Run</h1>
+
+        </headsection>
+    </header>
+    <main>
+        <div class="background-blur"></div>
         <canvas id="canvas" width="720px" height="480px"></canvas>
+        <table class="instructions">
+            <tr>
+                <td>a / d</td>
+                <td>Move Left and Right</td>
+            </tr>
+            <tr>
+                <td>space</td>
+                <td>Jump</td>
+            </tr>
+            <tr>
+                <td>E</td>
+                <td>Shoot Fireball</td>
+            </tr>
+            <tr>
+                <td>Q</td>
+                <td>Deflect enemy spells with the right timing</td>
+            </tr>
+            <tr>
+                <td>S</td>
+                <td>Fill the Flame in your Hand (mana) with blue glyphs on the ground</td>
+            </tr>
+        </table>
         <h2 class="screen-warning">Please tilt your phone to play</h2>
         <div class="mobile-buttons">
             <div class="button-wrapper">
@@ -45,5 +76,15 @@
                 <button id="btnDeflect" class="base-button"></button>
             </div>
         </div>
+    </main>
+    
+    <footer>
+        <div class="foot-container content-distance">
+            <a href="impress.html">
+                <h5>Impressum</h5>
+            </a>
+        </div>
+    </footer>
 </body>
+
 </html>

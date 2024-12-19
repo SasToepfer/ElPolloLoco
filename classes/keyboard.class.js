@@ -21,91 +21,66 @@ class Keyboard {
      * Binds key press events for the keyboard.
      */
     bindKeyPressEvents() {
-        this.bindKeyDownEvents();
-        this.bindKeyUpEvents();
+        window.addEventListener("keydown", (e) => this.handleKeyChange(e, true));
+        window.addEventListener("keyup", (e) => this.handleKeyChange(e, false));
     }
 
     /**
-     * Binds key down events to the window for tracking key presses.
+     * Handles key changes for keydown and keyup events.
+     * @param {KeyboardEvent} e - The keyboard event.
+     * @param {boolean} isPressed - Whether the key is pressed or released.
      */
-    bindKeyDownEvents() {
-        window.addEventListener('keydown', (e) => {
-            switch (e.keyCode) {
-                case 37: case 65: keyboard.LEFT = true; break;
-                case 39: case 68: keyboard.RIGHT = true; break;
-                case 40: case 83: keyboard.DOWN = true; break;
-                case 38: keyboard.UP = true; break;
-                case 32: keyboard.SPACE = true; break;
-                case 69: keyboard.E = true; break;
-                case 81: keyboard.Q = true; break;
-                default: break;
-            }
-        })
-    }
-
-    /**
-     * Binds key up events to the window for tracking key releases.
-     */
-    bindKeyUpEvents() {
-        window.addEventListener('keyup', (e) => {
-            switch (e.keyCode) {
-                case 65: case 37: keyboard.LEFT = false; break;
-                case 68: case 39: keyboard.RIGHT = false; break;
-                case 40: case 83: keyboard.DOWN = false; break;
-                case 38: keyboard.UP = false; break;
-                case 32: keyboard.SPACE = false; break;
-                case 69: keyboard.E = false; break;
-                case 81: keyboard.Q = false; break;
-                default: break;
-            }
-        })
+    handleKeyChange(e, isPressed) {
+        switch (e.keyCode) {
+            case 37: case 65: this.LEFT = isPressed; break;
+            case 39: case 68: this.RIGHT = isPressed; break;
+            case 38: this.UP = isPressed; break;
+            case 40: case 83: this.DOWN = isPressed; break;
+            case 32: this.SPACE = isPressed; break;
+            case 69: this.E = isPressed; break;
+            case 81: this.Q = isPressed; break;
+            default: break;
+        }
     }
 
     /**
      * Initializes button press events for touch interfaces.
      */
     initButtonPressEvents() {
-        this.bindBtnPressEvents("btnLeft", this.LEFT);
-        this.bindBtnPressEvents("btnDown", this.DOWN);
-        this.bindBtnPressEvents("btnRight", this.RIGHT);
-        this.bindBtnPressEvents("btnJump", this.SPACE);
-        this.bindBtnPressEvents("btnFireball", this.E);
-        this.bindBtnPressEvents("btnDeflect", this.Q);
+        const buttonMappings = {
+            btnLeft: "LEFT",
+            btnDown: "DOWN",
+            btnRight: "RIGHT",
+            btnJump: "SPACE",
+            btnFireball: "E",
+            btnDeflect: "Q",
+        };
+
+        for (const [buttonId, property] of Object.entries(buttonMappings)) {
+            this.bindBtnPressEvents(buttonId, property);
+        }
     }
 
     /**
      * Binds touch events for a specified button to trigger an action.
-     * @param {string} button - The ID of the button element.
-     * @param {boolean} action - The action to perform on touch events.
+     * @param {string} buttonId - The ID of the button element.
+     * @param {string} property - The name of the property to modify.
      */
-    bindBtnPressEvents(button, action) {
-        this.bindBtnTouchStart(button, action);
-        this.bindBtnTouchEnd(button, action);
-    }
+    bindBtnPressEvents(buttonId, property) {
+        const buttonElement = document.getElementById(buttonId);
+        if (!buttonElement) {
+            console.warn(`Button with ID '${buttonId}' not found.`);
+            return;
+        }
 
-    /**
-     * Binds touch start event to a button to set the action to true.
-     * @param {string} button - The ID of the button element.
-     * @param {boolean} action - The action to perform on touch start.
-     */
-    bindBtnTouchStart(button, action) {
-        document.getElementById(button).addEventListener("touchstart", e => {
+        buttonElement.addEventListener("touchstart", (e) => {
             e.preventDefault();
-            action = true;
-            console.log('press');
-            
+            this[property] = true;
         });
-    }
 
-    /**
-     * Binds touch end event to a button to set the action to false.
-     * @param {string} button - The ID of the button element.
-     * @param {boolean} action - The action to perform on touch end.
-     */
-    bindBtnTouchEnd(button, action) {
-        document.getElementById(button).addEventListener("touchend", (e) => {
+        buttonElement.addEventListener("touchend", (e) => {
             e.preventDefault();
-            action = false;
+            this[property] = false;
         });
     }
 

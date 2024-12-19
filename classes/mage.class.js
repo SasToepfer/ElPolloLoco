@@ -20,13 +20,10 @@ class Mage extends Entity {
     constructor(world) {
         super().loadImage("img/Enemy/Mage/Mage_Idle/Mage_Idle0000.png");
         this.createImageArray(this.IMAGES_IDLE, "img/Enemy/Mage/Mage_Idle/Mage_Idle", 120);
-        this.loadImages(this.IMAGES_IDLE);
         this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Mage/Mage_Walk/Mage_Walk", 46);
-        this.loadImages(this.IMAGES_WALKING);
         this.createImageArray(this.IMAGES_HURT, "img/Enemy/Mage/Mage_Hurt/", 30, 10);
-        this.loadImages(this.IMAGES_HURT);
         this.createImageArray(this.IMAGES_CAST, "img/Enemy/Mage/Mage_Attack/Mage_Attack", 80);
-        this.loadImages(this.IMAGES_CAST);
+        this.audioManager.isSoundMute = world.audioManager.isSoundMute;
         this.x = world.character.x + world.canvas.width;
         this.speed = 0.4;
         this.world = world;

@@ -1,0 +1,84 @@
+
+.background-blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("img/websiteBackground.png");
+    background-size: cover;
+    background-position: center;
+    filter: invert(0.1) blur(10px) grayscale(50%); 
+    
+    z-index: -1;
+}
+
+canvas {
+    background-color: black;
+    display: block;
+    position: relative; 
+    z-index: 1;
+    margin-bottom: 1rem;
+}
+
+table {
+    color: rgb(218, 209, 209);
+    font-size: 1.2em;
+}
+
+td {
+    padding-left: 1rem;
+}
+
+h1, h2, .mobile-buttons {
+    z-index: 1; 
+    position: relative;
+}
+
+.mobile-buttons {
+    display: none;
+}
+
+.button-wrapper {
+    width: auto;
+
+}
+
+#btnFireball {
+    background-image: url("img/Char/CastFireball/CastFireball0010.png");
+}
+
+#btnJump {
+    background-image: url("img/Char/Jump/CatniJump0009.png");
+}
+
+#btnDeflect {
+    background-image: url("img/Char/Deflect/deflect0010.png");
+}
+
+.move-button {
+    background-image: url("img/ui/left-arrow.png");
+
+}
+
+.base-button {
+    background-color: rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    width: 12vh;
+    height: 12vh;
+    border-width: 0;
+    border-radius: 50%;
+}
+
+.rotate-90 {
+    rotate: 270deg;
+}
+
+.rotate-180 {
+    rotate: 180deg;
+}
+
+.screen-warning {
+    display: none !important;
+}
+

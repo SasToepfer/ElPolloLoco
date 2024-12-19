@@ -33,6 +33,7 @@ class Entity extends Actor {
                 default: break;
             }
         }
+        this.loadImages(arr);
     }
 
     /**
@@ -96,11 +97,8 @@ class Entity extends Actor {
     isJumpingOn(enemy) {
         const charBox = this.getCollisionBox();
         const enemyBox = enemy.getCollisionBox();
-
-        // Prüfen, ob der Charakter über dem Gegner ist
         const isAbove = charBox.y + charBox.height <= enemyBox.y + enemyBox.height / 2;
-        const isFalling = this.speedY < 0; // Geschwindigkeit nach unten
-
+        const isFalling = this.speedY < 0;
         return isAbove && isFalling;
     }
 
@@ -116,28 +114,29 @@ class Entity extends Actor {
      */
     playAnimationWithArgs(arr, animationSpeed, isMovementBlocked, endFunction, frameCallback = null, frameCallbackFrame = -1, ...args) {
         if (this.blockAnimation) { return }
-        this.blockAnimation = true;
-        this.fixedMovement = isMovementBlocked;
-        if (this.currentAnimationInterval) {
-            clearInterval(this.currentAnimationInterval);
-        }
+        this.blockMovementAndAnims(isMovementBlocked)
         let currentFrame = 0;
         const animationFrames = arr;
-        const frameInterval = 1000 / animationSpeed;
         this.currentAnimationInterval = setInterval(() => {
             this.img = this.imageCache[animationFrames[currentFrame]];
-            if (frameCallback && currentFrame == frameCallbackFrame) {
-                frameCallback();
-            }
+            if (frameCallback && currentFrame == frameCallbackFrame) {frameCallback();}
             currentFrame++;
             if (currentFrame >= animationFrames.length) {
                 clearInterval(this.currentAnimationInterval);
                 this.currentAnimationInterval = null;
-                if (typeof endFunction === 'function') {
-                    endFunction(...args);
-                }
+                if (typeof endFunction === 'function') {endFunction(...args);}
             }
-        }, frameInterval);
+        }, 1000 / animationSpeed);
+    }
+
+    /**
+     * Blocks all other animations and clears current Animation Interval
+     * @param {boolean} isMovementBlocked should movement of actor be blocket, true if yes
+     */
+    blockMovementAndAnims(isMovementBlocked) {
+        this.blockAnimation = true;
+        this.fixedMovement = isMovementBlocked;
+        if (this.currentAnimationInterval) { clearInterval(this.currentAnimationInterval);}
     }
 
     /**

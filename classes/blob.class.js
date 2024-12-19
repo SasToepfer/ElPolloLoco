@@ -19,11 +19,9 @@ class Blob extends Entity {
     constructor(world) {
         super().loadImage("img/Enemy/Blob/Blob_Walk/Poring_Walk0000.png");
         this.createImageArray(this.IMAGES_ATTACK, "img/Enemy/Blob/Blob_Attack/Poring_Attack", 78);
-        this.loadImages(this.IMAGES_ATTACK);
         this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Blob/Blob_Walk/Poring_Walk", 51);
-        this.loadImages(this.IMAGES_WALKING);
         this.createImageArray(this.IMAGES_HURT, "img/Enemy/Blob/Blob_Dead/Blob_Dead", 6);
-        this.loadImages(this.IMAGES_HURT);
+        this.audioManager.isSoundMute = world.audioManager.isSoundMute;
         this.x = world.character.x + world.canvas.width;
         this.speed = 0.5 * scaleX;
         this.world = world;

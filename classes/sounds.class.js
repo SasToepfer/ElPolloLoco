@@ -74,6 +74,7 @@ class SoundManager {
      * @param {string} sound The name of the sound to play (e.g., "backgroundMusic").
      */
     playAudio(sound) {
+        if (this.isSoundMute) {return}
         let audio = this.getAudioToPlay(sound);
         audio.play();
     }

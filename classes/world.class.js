@@ -6,7 +6,6 @@ class World {
     ctx;
     backgroundLayers = [
         { img: 'img/background/Ground_00011_.jpg', speed: 0.2, yPosition: 0, width: 4096 / 1, height: 480 },
-        // { img: 'img/layer2.png', speed: 0.5 }, // Gebäude
         { img: 'img/background/sdpixel_floor_00002_.jpg', speed: 1.0, yPosition: 390, width: 4096 / 1, height: 200 }
     ];
     backgroundImages = [];
@@ -178,7 +177,7 @@ class World {
     /** Draw the main background with parallax effect. */
     drawBackground() {
         this.backgroundImages.forEach((layer, index) => {
-            const offsetX = +this.camera_x * layer.speed; // Parallax
+            const offsetX = +this.camera_x * layer.speed;
             const layerConfig = this.backgroundLayers[index];
             this.ctx.drawImage(layer.img, offsetX - 200, layerConfig.yPosition, layerConfig.width, layerConfig.height);
             if (offsetX < 0) {
@@ -195,6 +194,7 @@ class World {
         this.addCameraIndependet();
         this.ctx.translate(-this.camera_x, 0);
         this.addCameraFixed();
+        this.userInterface.renderTooltip(this.ctx);
         let self = this;
         requestAnimationFrame(() => self.draw())
     }
@@ -263,6 +263,6 @@ class World {
             loopAnimFrameIndex = 0;
             requestAnimationFrame(render);
             deleteWorld();
-        }, 3000);
+        }, 2000);
     }
 }

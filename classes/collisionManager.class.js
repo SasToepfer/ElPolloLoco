@@ -32,9 +32,9 @@ class CollisionManager {
                 if (this.character.isInvincible) { return; }
                 if (enemy instanceof Blob && this.character.isJumpingOn(enemy)) {
                     enemy.getHit(this.character.damage);
-                    this.character.isInvincible = true; // Charakter wird vorübergehend unverwundbar
+                    this.character.isInvincible = true;
                     setTimeout(() => {
-                        this.character.isInvincible = false; // Nach kurzer Zeit wieder verwundbar
+                        this.character.isInvincible = false;
                     }, 400);
                 } else {
                     this.character.getHit(enemy.damage);

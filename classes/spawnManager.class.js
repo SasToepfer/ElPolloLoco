@@ -79,6 +79,11 @@ class SpawnManager {
                 this.world.spells.splice(index, 1);
             }
         });
+        this.removeOffscreenEnemySpells();
+    }
+
+    /** Checks if any Enemy Spell is far out from Canvas and removes this Actor */
+    removeOffscreenEnemySpells() {
         this.world.enemySpells.forEach((spell, index) => {
             if (this.world.character.x - 500 >= spell.x || this.world.character.x + this.world.canvas.width + 200 <= spell.x) {
                 this.world.enemySpells.splice(index, 1);

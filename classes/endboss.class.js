@@ -18,23 +18,23 @@ class Endboss extends Entity {
 
     constructor(world) {
         super().loadImage("img/Enemy/Ina/Idle/Ina_Idle0001.png");
-        this.createImageArray(this.IMAGES_IDLE, "img/Enemy/Ina/Idle/Ina_Idle", 49, 1);
-        this.loadImages(this.IMAGES_IDLE);
-        this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Ina/Walk/Ina_Walk", 41, 3);
-        this.loadImages(this.IMAGES_WALKING);
-        this.createImageArray(this.IMAGES_DEAD, "img/Enemy/Ina/Dead/Ina_Dead", 29, 1);
-        this.loadImages(this.IMAGES_DEAD);
-        this.createImageArray(this.IMAGES_CAST, "img/Enemy/Ina/Attack1/Ina_Attack1", 90, 1);
-        this.loadImages(this.IMAGES_CAST);
-        this.createImageArray(this.IMAGES_CAST2, "img/Enemy/Ina/Attack2/Ina_Attack2", 259, 1);
-        this.loadImages(this.IMAGES_CAST2);
-
+        this.fillAnimArrays();
+        this.audioManager.isSoundMute = world.audioManager.isSoundMute;
         this.speed = 0.4;
         this.world = world;
         this.x = world.character.x + world.canvas.width;
         this.updateDimensions();
         this.animate();
         this.nextAction(true, 100);
+    }
+
+    /** fill animation arrays and loads into query */
+    fillAnimArrays() {
+        this.createImageArray(this.IMAGES_IDLE, "img/Enemy/Ina/Idle/Ina_Idle", 49, 1);
+        this.createImageArray(this.IMAGES_WALKING, "img/Enemy/Ina/Walk/Ina_Walk", 41, 3);
+        this.createImageArray(this.IMAGES_DEAD, "img/Enemy/Ina/Dead/Ina_Dead", 29, 1);
+        this.createImageArray(this.IMAGES_CAST, "img/Enemy/Ina/Attack1/Ina_Attack1", 90, 1);
+        this.createImageArray(this.IMAGES_CAST2, "img/Enemy/Ina/Attack2/Ina_Attack2", 259, 1);
     }
 
     /** Animation render based on animstate */
@@ -143,7 +143,6 @@ class Endboss extends Entity {
         }, 1000 / 2);
         setTimeout(() => {
             clearInterval(this.fireRainInterval);
-
         }, 30 * this.IMAGES_CAST2.length);
     }
 }

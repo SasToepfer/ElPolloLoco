@@ -22,27 +22,23 @@ class Character extends Entity {
 
     constructor() {
         super().loadImage("img/Char/Idle/0042.png");
-        this.createImageArray(this.IMAGES_IDLE, "img/Char/Idle/", 46);
-        this.loadImages(this.IMAGES_IDLE);
-        this.createImageArray(this.IMAGES_JUMPING, "img/Char/Jump/CatniJump", 21);
-        this.loadImages(this.IMAGES_JUMPING);
-        this.createImageArray(this.IMAGES_WALKING, "img/Char/WalkAnim/CatniWalk", 30);
-        this.loadImages(this.IMAGES_WALKING);
-        this.createImageArray(this.IMAGES_DEAD, "img/Char/Dead/isDead", 20);
-        this.loadImages(this.IMAGES_DEAD);
-        this.createImageArray(this.IMAGES_HURT, "img/Char/Hurt/Hurt", 21);
-        this.loadImages(this.IMAGES_HURT);
-        this.createImageArray(this.IMAGES_CASTFIREBALL, "img/Char/CastFireball/CastFireball", 18);
-        this.loadImages(this.IMAGES_CASTFIREBALL);
-        this.createImageArray(this.IMAGES_DEFLECT, "img/Char/Deflect/deflect", 31);
-        this.loadImages(this.IMAGES_DEFLECT);
-        this.createImageArray(this.IMAGES_GETMANA, "img/Char/GetMana/GetMana", 21);
-        this.loadImages(this.IMAGES_GETMANA);
+        this.fillAnimArrays();
         this.updateFullscreen();
         this.applyGravity();
         this.animate();
     }
 
+    /** fill animation arrays and loads into query */
+    fillAnimArrays() {
+        this.createImageArray(this.IMAGES_IDLE, "img/Char/Idle/", 46);
+        this.createImageArray(this.IMAGES_JUMPING, "img/Char/Jump/CatniJump", 21);
+        this.createImageArray(this.IMAGES_WALKING, "img/Char/WalkAnim/CatniWalk", 30);
+        this.createImageArray(this.IMAGES_DEAD, "img/Char/Dead/isDead", 20);
+        this.createImageArray(this.IMAGES_HURT, "img/Char/Hurt/Hurt", 21);
+        this.createImageArray(this.IMAGES_CASTFIREBALL, "img/Char/CastFireball/CastFireball", 18);
+        this.createImageArray(this.IMAGES_DEFLECT, "img/Char/Deflect/deflect", 31);
+        this.createImageArray(this.IMAGES_GETMANA, "img/Char/GetMana/GetMana", 21);
+    }
 
     /**
      * Updates the character's dimensions and the deflect box based on the current scale.
@@ -100,7 +96,7 @@ class Character extends Entity {
                 this.blockAnimation = false;
                 clearInterval(this.animInterval);
                 clearInterval(this.moveInterval);
-                this.playAnimationWithArgs(this.IMAGES_DEAD, this.IMAGES_DEAD.length, true, () => { this.world.gameOver("startscreen") });
+                this.playAnimationWithArgs(this.IMAGES_DEAD, this.IMAGES_DEAD.length, true, () => { this.world.gameOver("lose") });
             }
             this.hurtTimeout = setTimeout(() => {
                 this.isInvincible = false;
